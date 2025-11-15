@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo - Kunoro Widget</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      background: white;
+      border-radius: 20px;
+      padding: 60px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 48px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 18px;
+      color: #64748b;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .feature {
+      padding: 30px;
+      background: #f8fafc;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .feature h3 {
+      font-size: 20px;
+      color: #1e293b;
+      margin-bottom: 10px;
+    }
+
+    .feature p {
+      font-size: 14px;
+      color: #64748b;
+      margin: 0;
+    }
+
+    .cta {
+      text-align: center;
+      padding: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      color: white;
+    }
+
+    .cta h2 {
+      font-size: 32px;
+      margin-bottom: 15px;
+    }
+
+    .cta p {
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 0;
+    }
+
+    .arrow {
+      position: fixed;
+      bottom: 100px;
+      right: 100px;
+      font-size: 24px;
+      color: #667eea;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-20px);
+      }
+      60% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 40px 30px;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+
+      .arrow {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Kunoro Widget Demo</h1>
+    <p>
+      Este es un sitio de demostración que muestra cómo funciona el widget de chat embebido de Kunoro.
+      El widget aparece en la esquina inferior derecha de la pantalla.
+    </p>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">💬</div>
+        <h3>Chat Inteligente</h3>
+        <p>Respuestas automatizadas con IA para tus visitantes</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">⚡</div>
+        <h3>Súper Rápido</h3>
+        <p>Carga instantánea y respuestas en tiempo real</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">🎨</div>
+        <h3>Personalizable</h3>
+        <p>Adapta los colores y mensajes a tu marca</p>
+      </div>
+    </div>
+
+    <div class="cta">
+      <h2>¡Haz clic en el botón de chat! 👉</h2>
+      <p>Prueba nuestro asistente virtual y descubre cómo puede ayudarte</p>
+    </div>
+  </div>
+
+  <div class="arrow">👇</div>
+
+  <!-- Kunoro Widget -->
+  <script 
+    src="/widget.js" 
+    data-app-id="test-demo-widget"
+    data-api-url="http://localhost:3000"
+  ></script>
+
+  <script>
+    // Ejemplo de cómo usar la API del widget programáticamente
+    window.addEventListener('load', () => {
+      console.log('🎉 Widget cargado. API disponible:', window.KunoroWidget);
+      
+      // Puedes abrir el chat automáticamente después de 5 segundos
+      // setTimeout(() => {
+      //   window.KunoroWidget.open();
+      // }, 5000);
+    });
+  </script>
+</body>
+</html>
+

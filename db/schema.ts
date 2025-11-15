@@ -102,14 +102,65 @@ export const chatLogs = mysqlTable("chat_logs", {
 });
 
 
+// Conversaciones del widget
+export const conversations = mysqlTable("conversations", {
+  id: varchar("id", { length: 191 }).primaryKey(),
+  accountId: varchar("account_id", { length: 191 })
+    .notNull()
+    .references(() => accounts.id, { onDelete: "cascade" }),
+  siteId: varchar("site_id", { length: 191 })
+    .notNull()
+    .references(() => sites.id, { onDelete: "cascade" }),
+  visitorId: varchar("visitor_id", { length: 191 }), // Para identificar visitantes únicos
+  status: varchar("status", { length: 50 }).notNull().default("active"), // active, closed, archived
+  metadata: text("metadata"), // JSON con info del visitante (url, userAgent, etc)
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow().onUpdateNow(),
+}, (table) => ({
+  accountIdx: index("conversation_account_idx").on(table.accountId),
+  siteIdx: index("conversation_site_idx").on(table.siteId),
+  statusIdx: index("conversation_status_idx").on(table.status),
+}));
+
 export const messages = mysqlTable('messages', {
-  id: int('id').primaryKey().autoincrement(),
-  sessionId: varchar('session_id', { length: 255 }).notNull(),
+  id: varchar('id', { length: 191 }).primaryKey(),
+  conversationId: varchar('conversation_id', { length: 191 })
+    .notNull()
+    .references(() => conversations.id, { onDelete: "cascade" }),
   role: varchar('role', { length: 20 }).notNull(), // 'user' o 'assistant'
   content: text('content').notNull(),
   intent: varchar('intent', { length: 50 }), // categoría detectada
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (table) => ({
-  sessionIdx: index('session_idx').on(table.sessionId),
+  conversationIdx: index('conversation_idx').on(table.conversationId),
   createdAtIdx: index('created_at_idx').on(table.createdAt),
 }));
+
+// ------------------------------------------------------------
+// API Tokens para autenticación Bearer
+// ------------------------------------------------------------
+
+export const apiTokens = mysqlTable("api_tokens", {
+  id: varchar("id", { length: 191 }).primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(), // Nombre descriptivo del token
+  token: varchar("token", { length: 255 }).notNull().unique(), // El token Bearer
+  accountId: varchar("account_id", { length: 191 })
+    .notNull()
+    .references(() => accounts.id, { onDelete: "cascade" }),
+  userId: varchar("user_id", { length: 191 })
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  lastUsedAt: timestamp("last_used_at"),
+  expiresAt: timestamp("expires_at"), // null = sin expiración
+  isActive: boolean("is_active").notNull().default(true),
+  scopes: text("scopes"), // JSON con permisos: ["chat:read", "chat:write", etc]
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow().onUpdateNow(),
+}, (table) => ({
+  tokenIdx: index("token_idx").on(table.token),
+  accountIdx: index("account_idx").on(table.accountId),
+}));
+
+// Tipos TypeScript
+export type ApiToken = typeof apiTokens.$inferSelect;
+export type NewApiToken = typeof apiTokens.$inferInsert;

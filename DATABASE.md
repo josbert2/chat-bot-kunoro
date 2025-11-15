@@ -118,6 +118,28 @@ Almacena todos los mensajes del chat.
 | intent | VARCHAR(50) | Categoría detectada (opcional) |
 | created_at | TIMESTAMP | Fecha de creación |
 
+### Tabla: `api_tokens`
+
+Almacena tokens Bearer para autenticación API.
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| id | VARCHAR(191) | ID único del token |
+| name | VARCHAR(255) | Nombre descriptivo |
+| token | VARCHAR(255) | Token Bearer único |
+| account_id | VARCHAR(191) | ID de la cuenta (FK) |
+| user_id | VARCHAR(191) | ID del usuario creador (FK) |
+| last_used_at | TIMESTAMP | Última vez usado |
+| expires_at | TIMESTAMP | Fecha de expiración (NULL = sin expiración) |
+| is_active | BOOLEAN | Si el token está activo |
+| scopes | TEXT | Permisos JSON (ej: ["chat:read", "chat:write"]) |
+| created_at | TIMESTAMP | Fecha de creación |
+| updated_at | TIMESTAMP | Fecha de última actualización |
+
+**Índices:**
+- `token_idx` en `token` (búsqueda rápida)
+- `account_idx` en `account_id` (listar tokens por cuenta)
+
 ## 🔍 Características
 
 ### Persistencia de Sesiones
@@ -138,6 +160,14 @@ Almacena todos los mensajes del chat.
   - transaccionales
   - preguntas frecuentes
   - conversación
+
+### Autenticación API con Tokens Bearer
+- Tokens únicos y seguros para integrar con aplicaciones externas
+- Control granular con **scopes** (permisos)
+- Tokens pueden tener fecha de expiración
+- Se rastrea el último uso de cada token
+- Los tokens se pueden revocar en cualquier momento
+- Ver [API_BEARER_TOKENS.md](./API_BEARER_TOKENS.md) para más detalles
 
 ## 🔒 Seguridad
 

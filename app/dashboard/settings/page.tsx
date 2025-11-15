@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { accounts, user, sites } from "@/db/schema";
+import { accounts, sites } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import {
   parseWidgetConfig,
@@ -10,6 +10,7 @@ import {
   getDefaultWidgetColors,
 } from "@/lib/widget-config";
 import { AppearanceGeneralForm } from "@/components/AppearanceGeneralForm";
+import { ensureUserHasAccount } from "@/lib/ensure-account";
 
 export default async function DashboardSettingsPage() {
   const session = await auth.api.getSession({ headers: headers() });
@@ -19,34 +20,32 @@ export default async function DashboardSettingsPage() {
   }
 
   const userId = session.user.id as string;
-  const [currentUser] = await db.select().from(user).where(eq(user.id, userId));
+  
+  // Asegurar que el usuario tenga una cuenta (crear si no existe)
+  const accountId = await ensureUserHasAccount(userId);
 
   let accountData: any = null;
-  if (currentUser?.accountId) {
-    const [acc] = await db.select().from(accounts).where(eq(accounts.id, currentUser.accountId));
-    if (acc) accountData = acc;
-  }
+  const [acc] = await db.select().from(accounts).where(eq(accounts.id, accountId));
+  if (acc) accountData = acc;
 
   let primarySite: (typeof sites.$inferSelect) | null = null;
-  if (currentUser?.accountId) {
-    const [site] = await db.select().from(sites).where(eq(sites.accountId, currentUser.accountId));
+  const [site] = await db.select().from(sites).where(eq(sites.accountId, accountId));
 
-    if (site) {
-      primarySite = site;
-    } else {
-      const siteId = randomUUID();
-      const widgetConfig = serializeWidgetConfig({ colors: getDefaultWidgetColors() });
-      await db.insert(sites).values({
-        id: siteId,
-        accountId: currentUser.accountId,
-        name: `${accountData?.name ?? "Sitio principal"}`,
-        appId: `app_${randomUUID().replace(/-/g, "").slice(0, 12)}`,
-        widgetConfigJson: widgetConfig,
-      });
+  if (site) {
+    primarySite = site;
+  } else {
+    const siteId = randomUUID();
+    const widgetConfig = serializeWidgetConfig({ colors: getDefaultWidgetColors() });
+    await db.insert(sites).values({
+      id: siteId,
+      accountId: accountId,
+      name: `${accountData?.name ?? "Sitio principal"}`,
+      appId: `app_${randomUUID().replace(/-/g, "").slice(0, 12)}`,
+      widgetConfigJson: widgetConfig,
+    });
 
-      const [newSite] = await db.select().from(sites).where(eq(sites.id, siteId));
-      primarySite = newSite ?? null;
-    }
+    const [newSite] = await db.select().from(sites).where(eq(sites.id, siteId));
+    primarySite = newSite ?? null;
   }
 
   const accountName = accountData?.name ?? "Mi cuenta";
