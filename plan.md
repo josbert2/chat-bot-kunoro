@@ -438,9 +438,9 @@ Configuración de IA y métricas de rendimiento.
 
  [DOING] 8 MODELO DE DATOS RESUMIDO (empezando accounts/sites multi-tenant)
 
-accounts (id, name, plan, created_at) [DOING]
-users (id, account_id, name, email, role, password_hash, created_at)
-sites (id, account_id, name, app_id, domain, widget_config_json) [DOING]
+accounts (id, name, plan, created_at, business_model, industry, conversations_range, visitors_range, platform, agent_count, goal_id, use_ai) [DONE - base creada en Drizzle + MySQL]
+users (id, account_id, name, email, role, password_hash, created_at) [DOING - tabla de auth creada, faltan roles avanzados]
+sites (id, account_id, name, app_id, domain, widget_config_json) [DONE - base multi-tenant creada]
 visitors (id, account_id, site_id, external_id, email, name, last_seen_at, created_at)
 conversations (id, account_id, site_id, visitor_id, status, assigned_user_id, created_at, updated_at)
 messages (id, conversation_id, sender_type, sender_id, content, metadata_json, created_at)
@@ -480,3 +480,14 @@ Panel para éxito del cliente:
 Ver qué empresas usan más el sistema.
 
 Detectar riesgo de churn (pocas conversaciones, baja actividad).
+
+ [DONE] 10 PROGRESO IMPLEMENTADO HASTA AHORA (MVP INICIAL)
+
+ - Autenticación básica con Better Auth integrada al dashboard (login, registro, logout, sesión protegida).
+ - Esquema Drizzle + MySQL dockerizado con tablas de auth, multi-tenant (accounts, sites) y chatLogs.
+ - Onboarding multi-paso después del registro (datos de negocio, objetivos, sitio, preferencia de IA) guardado en cookie `kunoro_user`.
+ - Endpoint `/api/onboarding/complete` que persiste los datos del tour en `accounts` y vincula el usuario con su cuenta.
+ - Dashboard inicial creado en Next.js (ruta `/dashboard`) con layout light, sidebar de iconos al estilo Tidio y menú de usuario con dropdown.
+ - Página de configuración `/dashboard/settings` con sub-sidebar "Canales / Chat en vivo – Apariencia" y cards que leen datos reales de `accounts` (plan, plataforma, objetivo, useAi).
+ - Página de admin de usuarios para listar cuentas de Better Auth.
+ - Página `/plan` que muestra este plan dentro de la app para seguir el roadmap.
