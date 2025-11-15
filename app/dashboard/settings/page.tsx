@@ -1,8 +1,15 @@
+import { randomUUID } from "crypto";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { accounts, user } from "@/db/schema";
+import { accounts, user, sites } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import {
+  parseWidgetConfig,
+  serializeWidgetConfig,
+  getDefaultWidgetColors,
+} from "@/lib/widget-config";
+import { AppearanceGeneralForm } from "@/components/AppearanceGeneralForm";
 
 export default async function DashboardSettingsPage() {
   const session = await auth.api.getSession({ headers: headers() });
@@ -18,6 +25,28 @@ export default async function DashboardSettingsPage() {
   if (currentUser?.accountId) {
     const [acc] = await db.select().from(accounts).where(eq(accounts.id, currentUser.accountId));
     if (acc) accountData = acc;
+  }
+
+  let primarySite: (typeof sites.$inferSelect) | null = null;
+  if (currentUser?.accountId) {
+    const [site] = await db.select().from(sites).where(eq(sites.accountId, currentUser.accountId));
+
+    if (site) {
+      primarySite = site;
+    } else {
+      const siteId = randomUUID();
+      const widgetConfig = serializeWidgetConfig({ colors: getDefaultWidgetColors() });
+      await db.insert(sites).values({
+        id: siteId,
+        accountId: currentUser.accountId,
+        name: `${accountData?.name ?? "Sitio principal"}`,
+        appId: `app_${randomUUID().replace(/-/g, "").slice(0, 12)}`,
+        widgetConfigJson: widgetConfig,
+      });
+
+      const [newSite] = await db.select().from(sites).where(eq(sites.id, siteId));
+      primarySite = newSite ?? null;
+    }
   }
 
   const accountName = accountData?.name ?? "Mi cuenta";
@@ -37,6 +66,7 @@ export default async function DashboardSettingsPage() {
           : "Sin definir";
 
   const ownerEmail = session.user.email ?? "";
+  const widgetConfig = parseWidgetConfig(primarySite?.widgetConfigJson);
 
   return (
     <div className="h-full flex flex-col gap-4">
@@ -64,81 +94,110 @@ export default async function DashboardSettingsPage() {
               <p className="text-[11px] font-medium text-slate-800">Nombre de la cuenta</p>
               <p className="text-[11px] text-slate-900 font-medium">{accountName}</p>
               <p className="text-[11px] text-slate-500">Se sincroniza con los datos de onboarding.</p>
-                </div>
-                <span className="inline-flex items-center rounded-full border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[10px] text-emerald-700">
-                Plan {accountPlan}
-                </span>
             </div>
-            <div className="space-y-2 text-[11px] text-slate-600">
-                <div>
-                <p className="text-[11px] font-medium text-slate-800">Nombre de la cuenta</p>
-                <p className="text-[11px] text-slate-900 font-medium">{accountName}</p>
-                <p className="text-[11px] text-slate-500">Se sincroniza con los datos de onboarding.</p>
-                </div>
-                <div>
-                <p className="text-[11px] font-medium text-slate-800">Correo del propietario</p>
-                <p className="text-[11px] text-slate-900 font-medium">{ownerEmail}</p>
-                <p className="text-[11px] text-slate-500">Usado para notificaciones importantes.</p>
-                </div>
+            <div>
+              <p className="text-[11px] font-medium text-slate-800">Correo del propietario</p>
+              <p className="text-[11px] text-slate-900 font-medium">{ownerEmail}</p>
+              <p className="text-[11px] text-slate-500">Usado para notificaciones importantes.</p>
             </div>
-            <button className="mt-2 self-start rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] font-medium text-slate-700 hover:bg-slate-100">
-                Editar cuenta
-            </button>
-            </section>
+          </div>
+          <button className="mt-2 self-start rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] font-medium text-slate-700 hover:bg-slate-100">
+            Editar cuenta
+          </button>
+        </section>
 
-            {/* Sitio / canal principal */}
-            <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col gap-3">
-            <header>
-                <h4 className="text-sm font-semibold text-slate-900">Sitio y canal</h4>
-                <p className="text-[11px] text-slate-500">Dominio, plataforma y canales conectados.</p>
-            </header>
-            <div className="space-y-2 text-[11px] text-slate-600">
-                <div>
-                <p className="text-[11px] font-medium text-slate-800">Dominio principal</p>
-                <p className="text-[11px] text-slate-500">Ej: midominio.com</p>
-                </div>
-                <div>
-                <p className="text-[11px] font-medium text-slate-800">Plataforma</p>
-                <p className="text-[11px] text-slate-900 font-medium">{platform}</p>
-                <p className="text-[11px] text-slate-500">WordPress, Shopify, custom, etc.</p>
-                </div>
+        {/* Sitio / canal principal */}
+        <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col gap-3">
+          <header className="flex items-center justify-between">
+            <div>
+              <h4 className="text-sm font-semibold text-slate-900">Sitio y canal</h4>
+              <p className="text-[11px] text-slate-500">Dominio, plataforma y canales conectados.</p>
             </div>
-            <button className="mt-2 self-start rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] font-medium text-slate-700 hover:bg-slate-100">
-                Configurar sitio
-            </button>
-            </section>
+            <span className="inline-flex items-center rounded-full border border-slate-200 px-2 py-0.5 text-[10px] text-slate-600">
+              {primarySite?.appId ?? "sin-app-id"}
+            </span>
+          </header>
+          <div className="space-y-2 text-[11px] text-slate-600">
+            <div>
+              <p className="text-[11px] font-medium text-slate-800">Sitio</p>
+              <p className="text-[11px] text-slate-900 font-medium">
+                {primarySite?.name ?? "Crea tu primer sitio"}
+              </p>
+              <p className="text-[11px] text-slate-500">
+                El App ID se usa en el snippet JS para instalar el widget.
+              </p>
+            </div>
+            <div>
+              <p className="text-[11px] font-medium text-slate-800">Plataforma</p>
+              <p className="text-[11px] text-slate-900 font-medium">{platform}</p>
+              <p className="text-[11px] text-slate-500">WordPress, Shopify, custom, etc.</p>
+            </div>
+          </div>
+          <button className="mt-2 self-start rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] font-medium text-slate-700 hover:bg-slate-100">
+            Configurar sitio
+          </button>
+        </section>
 
-            {/* IA y automatización */}
-            <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col gap-3">
-            <header>
-                <h4 className="text-sm font-semibold text-slate-900">IA y automatización</h4>
-                <p className="text-[11px] text-slate-500">Preferencias de IA y uso de respuestas automáticas.</p>
-            </header>
-            <div className="space-y-2 text-[11px] text-slate-600">
-                <div className="flex items-center justify-between">
-                <div>
-                    <p className="text-[11px] font-medium text-slate-800">Usar IA para preguntas repetitivas</p>
-                    <p className="text-[11px] text-slate-500">Se basa en lo que definiste en el tour.</p>
-                </div>
-                <span
-                    className={`inline-flex h-5 w-9 items-center rounded-full px-0.5 text-[10px] text-white transition-colors ${
-                    useAi ? "bg-emerald-500 justify-end" : "bg-slate-300 justify-start"
-                    }`}
-                >
-                    <span className="h-4 w-4 rounded-full bg-white" />
-                </span>
-                </div>
-                <div>
-                <p className="text-[11px] font-medium text-slate-800">Objetivo principal</p>
-                <p className="text-[11px] text-slate-900 font-medium">{goalLabel}</p>
-                <p className="text-[11px] text-slate-500">Leads, soporte, ventas, etc.</p>
-                </div>
+        {/* IA y automatización */}
+        <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col gap-3">
+          <header>
+            <h4 className="text-sm font-semibold text-slate-900">IA y automatización</h4>
+            <p className="text-[11px] text-slate-500">Preferencias de IA y uso de respuestas automáticas.</p>
+          </header>
+          <div className="space-y-2 text-[11px] text-slate-600">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[11px] font-medium text-slate-800">Usar IA para preguntas repetitivas</p>
+                <p className="text-[11px] text-slate-500">Se basa en lo que definiste en el tour.</p>
+              </div>
+              <span
+                className={`inline-flex h-5 w-9 items-center rounded-full px-0.5 text-[10px] text-white transition-colors ${
+                  useAi ? "bg-emerald-500 justify-end" : "bg-slate-300 justify-start"
+                }`}
+              >
+                <span className="h-4 w-4 rounded-full bg-white" />
+              </span>
             </div>
-            <button className="mt-2 self-start rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] font-medium text-slate-700 hover:bg-slate-100">
-                Ajustar IA
-            </button>
-            </section>
+            <div>
+              <p className="text-[11px] font-medium text-slate-800">Objetivo principal</p>
+              <p className="text-[11px] text-slate-900 font-medium">{goalLabel}</p>
+              <p className="text-[11px] text-slate-500">Leads, soporte, ventas, etc.</p>
+            </div>
+          </div>
+          <button className="mt-2 self-start rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] font-medium text-slate-700 hover:bg-slate-100">
+            Ajustar IA
+          </button>
+        </section>
       </div>
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <header className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-blue-600 text-[12px] font-semibold text-white">
+              🎨
+            </span>
+            <div>
+              <h4 className="text-sm font-semibold text-slate-900">Apariencia del widget</h4>
+              <p className="text-[11px] text-slate-500">
+                Elige colores que se adapten a tu marca y se apliquen al snippet incrustado.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-[10px] font-medium text-slate-500">
+            <span className="rounded-full border border-slate-200 px-2 py-0.5 uppercase tracking-wide">
+              General
+            </span>
+            <span>App ID: {primarySite?.appId ?? "pendiente"}</span>
+            <span>•</span>
+            <span>Sitio: {primarySite?.name ?? "—"}</span>
+          </div>
+        </header>
+
+        <div className="mt-6">
+          <AppearanceGeneralForm siteId={primarySite?.id ?? null} initialColors={widgetConfig.colors} />
+        </div>
+      </section>
     </div>
   );
 }

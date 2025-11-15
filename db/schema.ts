@@ -1,4 +1,4 @@
-import { mysqlTable, varchar, timestamp, text, boolean } from "drizzle-orm/mysql-core";
+import { mysqlTable, varchar, timestamp, text, boolean, int, index } from "drizzle-orm/mysql-core";
 
 // ------------------------------------------------------------
 // Multi-tenant core tables
@@ -100,3 +100,16 @@ export const chatLogs = mysqlTable("chat_logs", {
   assistantMessage: text("assistant_message").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+
+export const messages = mysqlTable('messages', {
+  id: int('id').primaryKey().autoincrement(),
+  sessionId: varchar('session_id', { length: 255 }).notNull(),
+  role: varchar('role', { length: 20 }).notNull(), // 'user' o 'assistant'
+  content: text('content').notNull(),
+  intent: varchar('intent', { length: 50 }), // categoría detectada
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => ({
+  sessionIdx: index('session_idx').on(table.sessionId),
+  createdAtIdx: index('created_at_idx').on(table.createdAt),
+}));
