@@ -1,14 +1,17 @@
-import type { Config } from 'drizzle-kit';
+import type { Config } from "drizzle-kit";
+
+// Usamos aquí valores fijos alineados con docker-compose.yml para evitar
+// que variables de entorno globales (de otros proyectos) cambien la conexión.
 
 export default {
-  schema: './lib/db/schema.ts',
+  schema: './db/schema.ts',
   out: './drizzle',
   dialect: 'mysql',
   dbCredentials: {
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '3306'),
-    user: process.env.DB_USER || 'bookforce',
-    password: process.env.DB_PASSWORD || 'bookforce123',
-    database: process.env.DB_NAME || 'bookforce_chatbot',
+    host: process.env.DATABASE_HOST || '127.0.0.1',
+    port: parseInt(process.env.DATABASE_PORT || '3530'),
+    user: process.env.DATABASE_USER || 'root',
+    password: process.env.DATABASE_PASSWORD || 'rootpassword',
+    database: process.env.DATABASE_NAME || 'chatbot',
   },
 } satisfies Config;

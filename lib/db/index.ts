@@ -4,11 +4,11 @@ import * as schema from './schema';
 
 // Crear conexión a MySQL
 const connection = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '3306'),
-  user: process.env.DB_USER || 'bookforce',
-  password: process.env.DB_PASSWORD || 'bookforce123',
-  database: process.env.DB_NAME || 'bookforce_chatbot',
+  host: process.env.DATABASE_HOST || '127.0.0.1',
+  port: parseInt(process.env.DATABASE_PORT || '3530'),
+  user: process.env.DATABASE_USER || 'chatbot',
+  password: process.env.DATABASE_PASSWORD || 'chatbot_pw',
+  database: process.env.DATABASE_NAME || 'chatbot',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,

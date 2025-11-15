@@ -7,17 +7,36 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: bookforce_chatbot
-      MYSQL_USER: bookforce
-      MYSQL_PASSWORD: bookforce123
+      MYSQL_DATABASE: chatbot
+      MYSQL_USER: chatbot
+      MYSQL_PASSWORD: chatbot_pw
     ports:
-      - "3406:3306"
+      - "3530:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      #- ./docker/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -prootpassword || exit 1"]
+      interval: 10s
+      timeout: 5s
       retries: 10
+      start_period: 20s
+
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    container_name: bookforce-phpmyadmin
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: rootpassword
+      UPLOAD_LIMIT: 256M
+    ports:
+      - "7968:80"
 
 volumes:
   mysql_data:
