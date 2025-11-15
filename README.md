@@ -5,11 +5,14 @@ Un chatbot inteligente tipo Intercom construido con Next.js 14, TypeScript, Tail
 ## ✨ Características
 
 - 💬 **Chat en tiempo real** con IA conversacional
-- 🎨 **Diseño moderno** tipo Intercom con animaciones suaves
+- 🎨 **Diseño moderno** tipo Intercom con animaciones suaves y fuente Nunito
 - 📱 **Totalmente responsive** - funciona en móviles y desktop
 - 🚀 **Respuestas instantáneas** con OpenAI GPT-4
-- 💾 **Historial de conversación** durante la sesión
-- 🎯 **Contexto específico** sobre Bookforce
+- 💾 **Persistencia de sesiones** - Guarda conversaciones por IP en MySQL
+- 🗄️ **Base de datos MySQL** con Docker Compose y Drizzle ORM
+- 🎯 **Clasificador de intenciones** - Detecta automáticamente el tipo de consulta
+- 🔍 **6 categorías de intención**: valores, horarios, funciones, transaccionales, FAQ, conversación
+- 🌐 **Siempre en español** - Respuestas garantizadas en español
 - ⚡ **Optimizado** con Next.js 14 y App Router
 
 ## 🛠️ Tecnologías
@@ -41,6 +44,18 @@ Para obtener una API Key:
 - Visita [platform.openai.com](https://platform.openai.com)
 - Crea una cuenta o inicia sesión
 - Ve a API Keys y crea una nueva key
+
+4. **Iniciar la base de datos MySQL** (opcional pero recomendado):
+```bash
+# Iniciar MySQL con Docker
+npm run docker:up
+
+# Generar y aplicar migraciones
+npm run db:generate
+npm run db:push
+```
+
+Ver [DATABASE.md](./DATABASE.md) para más detalles sobre la configuración de la base de datos.
 
 ## 🚀 Uso
 

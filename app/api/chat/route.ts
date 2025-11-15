@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { getOrCreateSession, saveMessage, getSessionMessages } from '@/lib/session';
+import { getClientIP } from '@/lib/get-client-ip';
 
 // Initialize OpenAI client (will be null if no API key is provided)
 const openai = process.env.OPENAI_API_KEY 
@@ -175,13 +177,34 @@ Responde SIEMPRE en español. Sé cálido, amigable y ofrece ayuda de manera pro
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { messages } = body;
+    const { messages, loadHistory } = body;
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json(
         { error: 'Invalid request format' },
         { status: 400 }
       );
+    }
+
+    // Obtener IP del cliente y crear/obtener sesión
+    const clientIP = getClientIP(request);
+    const userAgent = request.headers.get('user-agent') || undefined;
+    
+    let session;
+    let sessionMessages = [];
+    
+    try {
+      session = await getOrCreateSession(clientIP, userAgent);
+      console.log(`[Session] User IP: ${clientIP}, Session ID: ${session.sessionId}`);
+      
+      // Si se solicita cargar historial, obtener mensajes previos
+      if (loadHistory) {
+        sessionMessages = await getSessionMessages(session.sessionId);
+        console.log(`[Session] Loaded ${sessionMessages.length} previous messages`);
+      }
+    } catch (dbError) {
+      console.error('[Session] Database error:', dbError);
+      // Continuar sin sesión si hay error de BD
     }
 
     // Check if API key is configured
@@ -202,6 +225,15 @@ export async function POST(request: NextRequest) {
     
     console.log(`[Intent Classifier] Detected intent: "${intent}" for message: "${lastUserMessage.content.substring(0, 50)}..."`);
 
+    // Guardar mensaje del usuario en la BD
+    if (session) {
+      try {
+        await saveMessage(session.sessionId, 'user', lastUserMessage.content, intent);
+      } catch (dbError) {
+        console.error('[Session] Error saving user message:', dbError);
+      }
+    }
+
     // Call OpenAI API
     const completion = await openai.chat.completions.create({
       model: 'gpt-4-turbo-preview',
@@ -216,9 +248,19 @@ export async function POST(request: NextRequest) {
     const assistantMessage = completion.choices[0]?.message?.content || 
       'Lo siento, no pude generar una respuesta. Por favor, intenta de nuevo.';
 
+    // Guardar respuesta del asistente en la BD
+    if (session) {
+      try {
+        await saveMessage(session.sessionId, 'assistant', assistantMessage);
+      } catch (dbError) {
+        console.error('[Session] Error saving assistant message:', dbError);
+      }
+    }
+
     return NextResponse.json({
       message: assistantMessage,
       intent: intent,
+      sessionId: session?.sessionId,
       usage: completion.usage,
     });
 
