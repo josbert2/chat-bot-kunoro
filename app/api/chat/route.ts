@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { db } from '@/db';
+import { chatLogs } from '@/db/schema';
 
 // Initialize OpenAI client (will be null if no API key is provided)
 const openai = process.env.OPENAI_API_KEY 
@@ -215,6 +217,19 @@ export async function POST(request: NextRequest) {
 
     const assistantMessage = completion.choices[0]?.message?.content || 
       'Lo siento, no pude generar una respuesta. Por favor, intenta de nuevo.';
+
+    const chatId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+
+    try {
+      await db.insert(chatLogs).values({
+        id: chatId,
+        intent,
+        userMessage: lastUserMessage.content,
+        assistantMessage,
+      });
+    } catch (logError) {
+      console.error('Error saving chat log:', logError);
+    }
 
     return NextResponse.json({
       message: assistantMessage,
