@@ -101,7 +101,6 @@ export const chatLogs = mysqlTable("chat_logs", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-
 // Conversaciones del widget
 export const conversations = mysqlTable("conversations", {
   id: varchar("id", { length: 191 }).primaryKey(),
@@ -164,3 +163,7 @@ export const apiTokens = mysqlTable("api_tokens", {
 // Tipos TypeScript
 export type ApiToken = typeof apiTokens.$inferSelect;
 export type NewApiToken = typeof apiTokens.$inferInsert;
+export type Account = typeof accounts.$inferSelect;
+export type Site = typeof sites.$inferSelect;
+export type Conversation = typeof conversations.$inferSelect;
+export type Message = typeof messages.$inferSelect;

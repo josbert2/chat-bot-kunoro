@@ -230,14 +230,11 @@ Ejemplo: tipos para mensajes que se reutilizan en backend, dashboard y widget.
 
 7. db – Modelo de datos
 
-Ejemplo si usas Prisma (idéntico concepto con Drizzle):
+Ejemplo si usas Drizzle (idéntico concepto con Drizzle):
 
-db/
-├─ schema.prisma
-└─ migrations/
+Drizzle
 
-
-schema.prisma (solo estructura, muy resumida):
+dr (solo estructura, muy resumida):
 
 model Workspace {
   id           String   @id @default(cuid())
