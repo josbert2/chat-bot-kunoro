@@ -1,19 +1,29 @@
-export interface ThemeConfig {
-  theme: 'light' | 'dark';
-  primaryColor: string;
-  position: 'bottom-left' | 'bottom-right';
-  welcomeMessage?: string;
+export interface WidgetColors {
+  background: string;
+  action: string;
 }
 
-export const defaultTheme: ThemeConfig = {
-  theme: 'light',
-  primaryColor: '#3B82F6',
-  position: 'bottom-right',
-  welcomeMessage: '¡Hola! ¿En qué te ayudamos?',
+export interface WidgetConfig {
+  colors: WidgetColors;
+  welcomeMessage?: string;
+  position?: 'bottom-left' | 'bottom-right';
+}
+
+export const DEFAULT_COLORS: WidgetColors = {
+  background: '#0F172A',
+  action: '#2563EB',
 };
 
-export function applyTheme(config: ThemeConfig) {
-  // TODO: Aplicar tema al widget
-  console.log('Applying theme:', config);
+export function isColorDark(hexColor: string): boolean {
+  const hex = hexColor.replace('#', '');
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance < 0.55;
+}
+
+export function getTextColor(backgroundColor: string): string {
+  return isColorDark(backgroundColor) ? '#ffffff' : '#111827';
 }
 

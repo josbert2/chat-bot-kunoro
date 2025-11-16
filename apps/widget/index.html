@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kunoro Widget - Preview</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #718096;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .controls {
+      background: #f7fafc;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    input[type="color"] {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus,
+    input[type="color"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    input[type="color"] {
+      height: 50px;
+      cursor: pointer;
+    }
+
+    .color-input-wrapper {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .color-input-wrapper input[type="color"] {
+      width: 80px;
+      flex-shrink: 0;
+    }
+
+    .color-input-wrapper input[type="text"] {
+      flex: 1;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    button:hover {
+      background: #5568d3;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .info {
+      background: #ebf8ff;
+      border: 1px solid #90cdf4;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 24px;
+    }
+
+    .info p {
+      margin: 0;
+      color: #2c5282;
+      font-size: 14px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 24px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <span class="badge">🚀 Development Preview</span>
+      <h1>Kunoro Widget</h1>
+      <p>Vista previa en vivo del widget. Cambia los colores y configuración para ver cómo se verá en tu sitio.</p>
+
+      <div class="controls">
+        <div class="control-group">
+          <label for="appId">App ID</label>
+          <input type="text" id="appId" value="demo-app-id" placeholder="Tu App ID">
+        </div>
+
+        <div class="grid">
+          <div class="control-group">
+            <label for="colorBackground">Color de Fondo</label>
+            <div class="color-input-wrapper">
+              <input type="color" id="colorBackgroundPicker" value="#0F172A">
+              <input type="text" id="colorBackground" value="#0F172A" placeholder="#0F172A">
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label for="colorAction">Color de Acción</label>
+            <div class="color-input-wrapper">
+              <input type="color" id="colorActionPicker" value="#2563EB">
+              <input type="text" id="colorAction" value="#2563EB" placeholder="#2563EB">
+            </div>
+          </div>
+        </div>
+
+        <button onclick="reloadWidget()">🔄 Recargar Widget</button>
+      </div>
+
+      <div class="info">
+        <p>
+          <strong>💡 Tip:</strong> El widget aparecerá en la esquina inferior derecha. 
+          Haz clic en el botón flotante para abrirlo y probar la interfaz.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Función para cargar el widget
+    function loadWidget() {
+      // Limpiar widget anterior
+      const existingWidget = document.getElementById('kunoro-chat-widget');
+      if (existingWidget) {
+        existingWidget.remove();
+      }
+
+      const existingStyles = document.getElementById('kunoro-widget-styles');
+      if (existingStyles) {
+        existingStyles.remove();
+      }
+
+      // Limpiar scripts anteriores
+      const existingScripts = document.querySelectorAll('script[data-app-id]');
+      existingScripts.forEach(script => script.remove());
+
+      // Obtener valores de los inputs
+      const appId = document.getElementById('appId').value || 'demo-app-id';
+      const colorBackground = document.getElementById('colorBackground').value || '#0F172A';
+      const colorAction = document.getElementById('colorAction').value || '#2563EB';
+
+      console.log('[Preview] Loading widget with:', { appId, colorBackground, colorAction });
+
+      // Crear script tag para cargar el widget
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = '/src/main.ts';
+      script.setAttribute('data-app-id', appId);
+      script.setAttribute('data-api-url', 'http://localhost:3001');
+      script.setAttribute('data-color-background', colorBackground);
+      script.setAttribute('data-color-action', colorAction);
+
+      document.body.appendChild(script);
+    }
+
+    // Sincronizar color picker con input text
+    function syncColorInputs(pickerId, textId) {
+      const picker = document.getElementById(pickerId);
+      const text = document.getElementById(textId);
+
+      picker.addEventListener('input', (e) => {
+        text.value = e.target.value.toUpperCase();
+      });
+
+      text.addEventListener('input', (e) => {
+        const value = e.target.value;
+        if (/^#[0-9A-F]{6}$/i.test(value)) {
+          picker.value = value;
+        }
+      });
+
+      text.addEventListener('blur', (e) => {
+        let value = e.target.value.trim();
+        if (!value.startsWith('#')) {
+          value = '#' + value;
+        }
+        value = value.toUpperCase();
+        if (/^#[0-9A-F]{6}$/i.test(value)) {
+          text.value = value;
+          picker.value = value;
+        } else {
+          // Revertir a valor por defecto si no es válido
+          text.value = picker.value;
+        }
+      });
+    }
+
+    // Configurar sincronización
+    syncColorInputs('colorBackgroundPicker', 'colorBackground');
+    syncColorInputs('colorActionPicker', 'colorAction');
+
+    // Exponer función global para el botón
+    window.reloadWidget = loadWidget;
+
+    // Cargar widget al inicio
+    loadWidget();
+  </script>
+</body>
+</html>
+

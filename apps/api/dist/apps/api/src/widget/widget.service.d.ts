@@ -4,28 +4,19 @@ export declare class WidgetService {
     private readonly dbService;
     constructor(dbService: DatabaseService);
     init(siteKey: string, body: WidgetInitDto): Promise<{
-        visitorId: string;
+        visitorId: any;
         project: {
-            id: string;
-            name: string;
+            id: any;
+            name: any;
         };
         widgetConfig: any;
-        activeConversation: {
-            id: string;
-            accountId: string;
-            siteId: string;
-            visitorId: string;
-            status: string;
-            metadata: string;
-            createdAt: Date;
-            updatedAt: Date;
-        };
+        activeConversation: any;
     }>;
     sendMessage(siteKey: string, body: WidgetMessageDto & {
         pageUrl?: string;
         userAgent?: string;
     }): Promise<{
-        conversationId: string;
+        conversationId: any;
         message: string;
         usage: any;
     }>;

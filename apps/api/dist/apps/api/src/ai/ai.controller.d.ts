@@ -5,7 +5,5 @@ export declare class AiController {
     suggestReply(body: {
         conversationId: string;
         lastMessage: string;
-    }): Promise<{
-        message: string;
-    }>;
+    }): Promise<any>;
 }

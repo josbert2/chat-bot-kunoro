@@ -5,16 +5,8 @@ export declare class ProjectsService {
     constructor(dbService: DatabaseService);
     findAll(accountId: string): Promise<{
         success: boolean;
-        data: {
-            id: string;
-            name: string;
-            appId: string;
-            domain: string;
-            widgetConfig: any;
-            createdAt: string;
-            widgetSnippet: string;
-        }[];
-        total: number;
+        data: any;
+        total: any;
     }>;
     create(accountId: string, body: {
         name: string;
@@ -22,44 +14,36 @@ export declare class ProjectsService {
     }): Promise<{
         success: boolean;
         data: {
-            id: string;
-            name: string;
-            appId: string;
-            domain: string;
+            id: any;
+            name: any;
+            appId: any;
+            domain: any;
             widgetSnippet: string;
         };
     }>;
     findOne(projectId: string, accountId: string): Promise<{
         success: boolean;
         data: {
-            id: string;
-            name: string;
-            appId: string;
-            domain: string;
+            id: any;
+            name: any;
+            appId: any;
+            domain: any;
             widgetConfig: any;
-            createdAt: string;
+            createdAt: any;
         };
     }>;
     findByAppId(appId: string): Promise<{
         appId: string;
         site: {
-            id: string;
-            name: string;
-            domain: string;
+            id: any;
+            name: any;
+            domain: any;
         };
         config: any;
     }>;
     update(projectId: string, accountId: string, body: any): Promise<{
         success: boolean;
-        data: {
-            id: string;
-            accountId: string;
-            name: string;
-            appId: string;
-            domain: string;
-            widgetConfigJson: string;
-            createdAt: Date;
-        };
+        data: any;
     }>;
     remove(projectId: string, accountId: string): Promise<{
         success: boolean;
@@ -68,9 +52,9 @@ export declare class ProjectsService {
     getWidgetConfig(appId: string): Promise<{
         appId: string;
         site: {
-            id: string;
-            name: string;
-            domain: string;
+            id: any;
+            name: any;
+            domain: any;
         };
         config: any;
     } | {
@@ -80,7 +64,7 @@ export declare class ProjectsService {
     updateWidgetConfig(projectId: string, accountId: string, config: WidgetConfig): Promise<{
         success: boolean;
         data: {
-            id: string;
+            id: any;
             widgetConfig: any;
         };
     }>;

@@ -6,13 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:dashboard": "vite build && cp dist/widget.js ../dashboard/public/widget.js",
     "preview": "vite preview"
-  },
-  "dependencies": {
-    "@saas-chat/core-types": "workspace:*"
-  },
-  "peerDependencies": {
-    "@saas-chat/core-types": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20",

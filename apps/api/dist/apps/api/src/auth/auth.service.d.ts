@@ -29,24 +29,11 @@ export declare class AuthService {
     refresh(refreshToken: string): Promise<void>;
     getMe(userId: string): Promise<{
         user: {
-            id: string;
-            name: string;
-            email: string;
+            id: any;
+            name: any;
+            email: any;
         };
-        workspace: {
-            id: string;
-            name: string;
-            plan: string;
-            businessModel: string;
-            industry: string;
-            conversationsRange: string;
-            visitorsRange: string;
-            platform: string;
-            agentCount: string;
-            goalId: string;
-            useAi: boolean;
-            createdAt: Date;
-        };
+        workspace: any;
     }>;
     private generateToken;
 }

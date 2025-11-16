@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BotsController = void 0;
 const common_1 = require("@nestjs/common");
@@ -95,6 +96,6 @@ __decorate([
 exports.BotsController = BotsController = __decorate([
     (0, common_1.Controller)('bots'),
     (0, common_1.UseGuards)(),
-    __metadata("design:paramtypes", [bots_service_1.BotsService])
+    __metadata("design:paramtypes", [typeof (_a = typeof bots_service_1.BotsService !== "undefined" && bots_service_1.BotsService) === "function" ? _a : Object])
 ], BotsController);
 //# sourceMappingURL=bots.controller.js.map

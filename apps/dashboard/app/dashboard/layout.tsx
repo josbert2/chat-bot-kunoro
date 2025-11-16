@@ -1,46 +1,21 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { headers, cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
 import { UserMenu } from "@/components/UserMenu";
 import { SidebarUserMenu } from "@/components/SidebarUserMenu";
 import { SettingsSubSidebar } from "@/components/SettingsSubSidebar";
+import { InboxSubSidebar } from "@/components/InboxSubSidebar";
+import { CheckAuth } from "@/components/CheckAuth";
 
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const session = await auth.api.getSession({
-    headers: headers(),
-  });
-
-  if (!session) {
-    redirect("/login");
-  }
-
-  const userEmail = session.user.email ?? "usuario@kunoro";
-
-   // Si el usuario aún no completó el onboarding (no tiene department en la cookie),
-   // lo redirigimos al tour antes de mostrar el dashboard.
-   const cookieStore = cookies();
-   const rawKunoro = cookieStore.get("kunoro_user")?.value;
-   if (rawKunoro) {
-     try {
-       const parsed = JSON.parse(decodeURIComponent(rawKunoro));
-       if (!parsed?.department) {
-         redirect("/onboarding");
-       }
-     } catch {
-       // Si la cookie está corrupta, enviamos igual al onboarding.
-       redirect("/onboarding");
-     }
-   } else {
-     redirect("/onboarding");
-   }
+  // La validación de auth se hace en el cliente
+  const userEmail = "usuario@kunoro"; // Se obtiene del localStorage en el cliente
 
   return (
+    <CheckAuth>
     <div className="min-h-screen bg-slate-100 text-slate-900 flex">
       <aside className="w-16 border-r border-slate-200 bg-slate-50 flex flex-col items-center py-4 gap-4">
         {/* Logo / home */}
@@ -51,14 +26,14 @@ export default async function DashboardLayout({
 
         {/* Navegación principal */}
         <nav className="flex flex-col items-center gap-3 mt-2 text-slate-600">
-          <button className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-700 border border-blue-100">
+          <Link href="/dashboard" className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-700 border border-blue-100">
             <span className="sr-only">Panel</span>
             <span className="text-base">🏠</span>
-          </button>
-          <button className="flex h-10 w-10 items-center justify-center rounded-2xl hover:bg-slate-100">
+          </Link>
+          <Link href="/dashboard/inbox" className="flex h-10 w-10 items-center justify-center rounded-2xl hover:bg-slate-100">
             <span className="sr-only">Inbox</span>
             <span className="text-base">💬</span>
-          </button>
+          </Link>
           <button className="flex h-10 w-10 items-center justify-center rounded-2xl hover:bg-slate-100">
             <span className="sr-only">IA</span>
             <span className="text-base">🤖</span>
@@ -125,6 +100,7 @@ export default async function DashboardLayout({
         {/* Zona inferior: sub-sidebar (cuando aplique) + contenido */}
         <div className="flex flex-1 min-h-0">
           <SettingsSubSidebar />
+          <InboxSubSidebar />
           <section className="flex-1 p-6 bg-slate-100 overflow-auto">
             <div className="mx-auto max-w-6xl">
               {children}
@@ -133,5 +109,6 @@ export default async function DashboardLayout({
         </div>
       </main>
     </div>
+    </CheckAuth>
   );
 }

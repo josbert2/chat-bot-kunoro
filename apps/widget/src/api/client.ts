@@ -10,10 +10,15 @@ const getApiUrl = (): string => {
 export class WidgetApiClient {
   private baseUrl: string;
   private siteKey: string;
+  private visitorId?: string;
 
   constructor(siteKey: string, baseUrl?: string) {
     this.siteKey = siteKey;
     this.baseUrl = baseUrl || getApiUrl();
+  }
+  
+  setVisitorId(visitorId: string) {
+    this.visitorId = visitorId;
   }
 
   async init(visitorId?: string) {
@@ -47,6 +52,9 @@ export class WidgetApiClient {
       body: JSON.stringify({
         conversationId: conversationId || undefined,
         content,
+        visitorId: this.visitorId,
+        pageUrl: typeof window !== 'undefined' ? window.location.href : undefined,
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
       }),
     });
 

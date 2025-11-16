@@ -6,7 +6,8 @@ export interface Project {
   domain?: string;
 }
 
-export interface WidgetConfig {
+// WidgetConfig simple para proyectos (legacy)
+export interface ProjectWidgetConfig {
   theme: 'light' | 'dark';
   primaryColor: string;
   position: 'bottom-left' | 'bottom-right';

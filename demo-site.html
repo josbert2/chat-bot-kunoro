@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Site - Chat en Vivo Kunoro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .hero {
+            background: white;
+            padding: 4rem 3rem;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2.5rem;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #667eea;
+        }
+
+        .feature-description {
+            color: #64748b;
+        }
+
+        .chat-prompt {
+            background: #fef3c7;
+            border: 2px solid #fbbf24;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .chat-prompt h3 {
+            color: #92400e;
+            margin-bottom: 0.5rem;
+        }
+
+        .chat-prompt p {
+            color: #78350f;
+        }
+
+        .arrow {
+            font-size: 2rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        footer {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            margin-top: 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            color: #64748b;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">🚀 Kunoro Demo</div>
+        </header>
+
+        <div class="hero">
+            <h1>Bienvenido a Kunoro Chat</h1>
+            <p class="subtitle">
+                Chat en vivo para tu negocio. Conecta con tus clientes en tiempo real.
+            </p>
+            <a href="#" class="cta-button" onclick="openChat(); return false;">
+                💬 Prueba el Chat Ahora
+            </a>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">Respuestas Instantáneas</h3>
+                <p class="feature-description">
+                    Responde a tus clientes en tiempo real con nuestro sistema de chat en vivo.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3 class="feature-title">IA Integrada</h3>
+                <p class="feature-description">
+                    Respuestas automáticas inteligentes para atender a tus clientes 24/7.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Analytics</h3>
+                <p class="feature-description">
+                    Obtén insights sobre las conversaciones y mejora tu servicio al cliente.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔗</div>
+                <h3 class="feature-title">Integraciones</h3>
+                <p class="feature-description">
+                    Conecta con WhatsApp, Zapier y más para automatizar tu flujo de trabajo.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3 class="feature-title">Personalizable</h3>
+                <p class="feature-description">
+                    Adapta los colores y el diseño del widget a tu marca.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">Seguro</h3>
+                <p class="feature-description">
+                    Tus datos y los de tus clientes están protegidos con encriptación.
+                </p>
+            </div>
+        </div>
+
+        <div class="chat-prompt">
+            <h3>¿Tienes alguna pregunta?</h3>
+            <p>Haz click en el botón de chat en la esquina inferior derecha</p>
+            <div class="arrow">👇</div>
+        </div>
+
+        <footer>
+            <p>© 2025 Kunoro - Sistema de Chat en Vivo</p>
+            <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+                Este es un sitio de demostración. El widget está funcionando en tiempo real.
+            </p>
+        </footer>
+    </div>
+
+    <!-- 
+        ============================================
+        WIDGET DE CHAT - CONFIGURACIÓN
+        ============================================
+        
+        IMPORTANTE: Reemplaza los valores antes de usar:
+        
+        1. data-app-id: Copia tu App ID desde el dashboard
+           → Dashboard → Settings → Apariencia → Código de instalación
+        
+        2. data-color-background: Color de fondo del header del widget
+        3. data-color-action: Color de los botones y elementos interactivos
+        
+        Para obtener tu App ID:
+        1. Ve a http://localhost:3000/login
+        2. Inicia sesión
+        3. Ve a Settings → Apariencia
+        4. Copia el "data-app-id" del código de instalación
+    -->
+    <script 
+      src="http://localhost:3000/widget.js"
+      data-app-id="REEMPLAZA_CON_TU_APP_ID"
+      data-color-background="#667eea"
+      data-color-action="#764ba2"
+    ></script>
+
+    <script>
+        // Función para abrir el widget programáticamente
+        function openChat() {
+            if (window.KunoroWidget) {
+                window.KunoroWidget.open();
+            } else {
+                alert('Por favor, configura tu App ID en el código del widget');
+            }
+        }
+
+        // Log para debug
+        console.log('🚀 Demo Site cargado');
+        console.log('📝 Para usar este demo:');
+        console.log('1. Inicia sesión en http://localhost:3000/login');
+        console.log('2. Ve a Settings → Apariencia');
+        console.log('3. Copia tu App ID');
+        console.log('4. Reemplaza "REEMPLAZA_CON_TU_APP_ID" en este archivo');
+        console.log('5. Recarga la página');
+    </script>
+</body>
+</html>
+
