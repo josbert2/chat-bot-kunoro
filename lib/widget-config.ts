@@ -3,8 +3,29 @@ export type WidgetColors = {
   action: string;
 };
 
+export type WidgetPosition = 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
+
+export type BusinessHours = {
+  enabled: boolean;
+  timezone: string;
+  schedule: {
+    [key: string]: { // 'monday', 'tuesday', etc.
+      enabled: boolean;
+      from: string; // "09:00"
+      to: string;   // "18:00"
+    };
+  };
+};
+
 export type WidgetConfig = {
   colors: WidgetColors;
+  position?: WidgetPosition;
+  welcomeMessage?: string;
+  offlineMessage?: string;
+  businessHours?: BusinessHours;
+  logoUrl?: string;
+  brandName?: string;
+  showPoweredBy?: boolean;
 };
 
 const HEX_COLOR_REGEX = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
@@ -18,21 +39,54 @@ export function getDefaultWidgetColors(): WidgetColors {
   return { ...DEFAULT_WIDGET_COLORS };
 }
 
+export function getDefaultWidgetConfig(): WidgetConfig {
+  return {
+    colors: getDefaultWidgetColors(),
+    position: 'bottom-right',
+    welcomeMessage: '¡Hola! ¿En qué podemos ayudarte?',
+    offlineMessage: 'En este momento estamos offline, déjanos tu mensaje y te responderemos pronto.',
+    brandName: 'Soporte',
+    showPoweredBy: true,
+    businessHours: {
+      enabled: false,
+      timezone: 'America/Santiago',
+      schedule: {
+        monday: { enabled: true, from: '09:00', to: '18:00' },
+        tuesday: { enabled: true, from: '09:00', to: '18:00' },
+        wednesday: { enabled: true, from: '09:00', to: '18:00' },
+        thursday: { enabled: true, from: '09:00', to: '18:00' },
+        friday: { enabled: true, from: '09:00', to: '18:00' },
+        saturday: { enabled: false, from: '09:00', to: '18:00' },
+        sunday: { enabled: false, from: '09:00', to: '18:00' },
+      },
+    },
+  };
+}
+
 export function parseWidgetConfig(raw?: string | null): WidgetConfig {
   if (!raw) {
-    return { colors: getDefaultWidgetColors() };
+    return getDefaultWidgetConfig();
   }
 
   try {
     const parsed = JSON.parse(raw) as Partial<WidgetConfig>;
+    const defaults = getDefaultWidgetConfig();
+    
     return {
       colors: {
         background: normalizeHexColor(parsed?.colors?.background, DEFAULT_WIDGET_COLORS.background),
         action: normalizeHexColor(parsed?.colors?.action, DEFAULT_WIDGET_COLORS.action),
       },
+      position: parsed?.position || defaults.position,
+      welcomeMessage: parsed?.welcomeMessage || defaults.welcomeMessage,
+      offlineMessage: parsed?.offlineMessage || defaults.offlineMessage,
+      brandName: parsed?.brandName || defaults.brandName,
+      logoUrl: parsed?.logoUrl,
+      showPoweredBy: parsed?.showPoweredBy !== undefined ? parsed.showPoweredBy : defaults.showPoweredBy,
+      businessHours: parsed?.businessHours || defaults.businessHours,
     };
   } catch {
-    return { colors: getDefaultWidgetColors() };
+    return getDefaultWidgetConfig();
   }
 }
 
