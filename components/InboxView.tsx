@@ -210,20 +210,40 @@ export function InboxView({
     }
 
     const handleEvent = (event: any) => {
+      console.log('[inbox:event] Received event:', event);
+      
       if (event?.type === 'conversation:updated') {
         refreshConversations();
         if (event.conversationId && event.conversationId === selectedConversationIdRef.current) {
           handleSelectConversation(event.conversationId);
         }
       }
-      if (event?.type === 'typing' && event.sender === 'visitor' && event.conversationId === selectedConversationIdRef.current) {
-        setIsVisitorTyping(true);
-        if (visitorTypingTimeoutRef.current) {
-          clearTimeout(visitorTypingTimeoutRef.current);
+      
+      if (event?.type === 'typing' && event.sender === 'visitor') {
+        console.log('[inbox:event] Visitor typing event:', {
+          conversationId: event.conversationId,
+          currentConversation: selectedConversationIdRef.current,
+          matches: event.conversationId === selectedConversationIdRef.current,
+        });
+        
+        if (event.conversationId === selectedConversationIdRef.current) {
+          if (event.status === 'stop') {
+            setIsVisitorTyping(false);
+            if (visitorTypingTimeoutRef.current) {
+              clearTimeout(visitorTypingTimeoutRef.current);
+            }
+          } else {
+            setIsVisitorTyping(true);
+            if (visitorTypingTimeoutRef.current) {
+              clearTimeout(visitorTypingTimeoutRef.current);
+            }
+            visitorTypingTimeoutRef.current = setTimeout(() => setIsVisitorTyping(false), 2000);
+          }
         }
-        visitorTypingTimeoutRef.current = setTimeout(() => setIsVisitorTyping(false), 2000);
       }
+      
       if (event?.type === 'presence' && event.sender === 'visitor' && event.conversationId === selectedConversationIdRef.current) {
+        console.log('[inbox:event] Visitor presence:', event.status);
         setVisitorStatus(event.status === 'online' ? 'online' : 'offline');
       }
     };
@@ -248,13 +268,32 @@ export function InboxView({
   }, [workspaceId, refreshConversations, handleSelectConversation]);
 
   const handleAgentTyping = () => {
-    if (!socketRef.current || !selectedConversationId) return;
-    socketRef.current.emit('typing', { conversationId: selectedConversationId, sender: 'agent' });
+    if (!socketRef.current || !selectedConversationId) {
+      console.log('[inbox:typing] Cannot emit typing:', {
+        hasSocket: !!socketRef.current,
+        hasConversationId: !!selectedConversationId,
+      });
+      return;
+    }
+    
+    console.log('[inbox:typing] Emitting typing event for conversation:', selectedConversationId);
+    socketRef.current.emit('typing', { 
+      conversationId: selectedConversationId, 
+      sender: 'agent',
+      status: 'typing'
+    });
+    
     if (agentTypingTimeoutRef.current) {
       clearTimeout(agentTypingTimeoutRef.current);
     }
+    
     agentTypingTimeoutRef.current = setTimeout(() => {
-      socketRef.current?.emit('typing', { conversationId: selectedConversationId, sender: 'agent', status: 'stop' });
+      console.log('[inbox:typing] Emitting stop typing');
+      socketRef.current?.emit('typing', { 
+        conversationId: selectedConversationId, 
+        sender: 'agent', 
+        status: 'stop' 
+      });
     }, 1500);
   };
 

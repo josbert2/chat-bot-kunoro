@@ -33,43 +33,64 @@ export function getSocketServer(res: NextApiResponse) {
       });
 
       io.on("connection", (socket) => {
+        console.log('[socket] New connection:', socket.id);
+
         const { rooms } = socket.handshake.auth || {};
         if (Array.isArray(rooms)) {
           rooms
             .filter((room): room is string => typeof room === "string" && room.includes(":"))
-            .forEach((room) => socket.join(room));
+            .forEach((room) => {
+              socket.join(room);
+              console.log('[socket] Auto-joined room:', room);
+            });
         }
 
         socket.on("join", (room: string) => {
           if (typeof room === "string" && room.includes(":")) {
             socket.join(room);
+            console.log('[socket] Joined room:', room);
           }
         });
 
         socket.on("leave", (room: string) => {
           if (typeof room === "string" && room.includes(":")) {
             socket.leave(room);
+            console.log('[socket] Left room:', room);
           }
         });
 
         socket.on("typing", (payload?: { conversationId?: string; sender?: string; status?: string }) => {
           if (!payload?.conversationId || typeof payload.conversationId !== "string") return;
-          socket.to(`conversation:${payload.conversationId}`).emit("event", {
+          
+          const room = `conversation:${payload.conversationId}`;
+          console.log('[socket] Typing event:', { room, sender: payload.sender, status: payload.status });
+          
+          // Broadcast to all clients in the room EXCEPT the sender
+          socket.to(room).emit("event", {
             type: "typing",
             sender: payload.sender,
-            status: payload.status,
+            status: payload.status || 'typing',
             conversationId: payload.conversationId,
           });
         });
 
         socket.on("presence", (payload?: { conversationId?: string; sender?: string; status?: string }) => {
           if (!payload?.conversationId || typeof payload.conversationId !== "string") return;
-          socket.to(`conversation:${payload.conversationId}`).emit("event", {
+          
+          const room = `conversation:${payload.conversationId}`;
+          console.log('[socket] Presence event:', { room, sender: payload.sender, status: payload.status });
+          
+          // Broadcast to all clients in the room EXCEPT the sender
+          socket.to(room).emit("event", {
             type: "presence",
             sender: payload.sender,
-            status: payload.status,
+            status: payload.status || 'online',
             conversationId: payload.conversationId,
           });
+        });
+
+        socket.on("disconnect", () => {
+          console.log('[socket] Disconnected:', socket.id);
         });
       });
 

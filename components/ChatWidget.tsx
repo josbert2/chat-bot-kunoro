@@ -82,6 +82,7 @@ export default function ChatWidget({ appId, initialColors }: ChatWidgetProps) {
 
     async function initVisitor() {
       const storedToken = typeof window !== 'undefined' ? window.localStorage.getItem(SESSION_STORAGE_KEY) : null;
+      console.log('[widget:init] Starting initialization', { appId, storedToken: !!storedToken });
       setIsInitializing(true);
       try {
         const response = await fetch('/api/widget/init', {
@@ -94,14 +95,23 @@ export default function ChatWidget({ appId, initialColors }: ChatWidgetProps) {
             sessionToken: storedToken,
           }),
         });
+        console.log('[widget:init] Response status:', response.status);
         if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error('[widget:init] Error response:', errorData);
           throw new Error('No se pudo inicializar el chat');
         }
         const data = await response.json();
+        console.log('[widget:init] Response data:', data);
         if (!cancelled) {
           setSessionToken(data.sessionToken);
           setMessages(data.messages ?? []);
           setConversationId(data.conversation?.id ?? null);
+          console.log('[widget:init] State updated', {
+            sessionToken: data.sessionToken,
+            messageCount: data.messages?.length ?? 0,
+            conversationId: data.conversation?.id,
+          });
           if (data.sessionToken && typeof window !== 'undefined') {
             window.localStorage.setItem(SESSION_STORAGE_KEY, data.sessionToken);
           }
@@ -166,38 +176,74 @@ export default function ChatWidget({ appId, initialColors }: ChatWidgetProps) {
   }, []);
 
   useEffect(() => {
-    if (!conversationId) return;
+    if (!conversationId) {
+      console.log('[widget:socket] No conversationId, skipping socket setup');
+      return;
+    }
 
     if (!socketRef.current) {
+      console.log('[widget:socket] Creating new socket connection');
       socketRef.current = io({
         path: '/api/socket/io',
+      });
+
+      socketRef.current.on('connect', () => {
+        console.log('[widget:socket] Connected to Socket.IO');
+      });
+
+      socketRef.current.on('disconnect', () => {
+        console.log('[widget:socket] Disconnected from Socket.IO');
+      });
+
+      socketRef.current.on('connect_error', (error) => {
+        console.error('[widget:socket] Connection error:', error);
       });
     }
 
     const socket = socketRef.current;
+    console.log('[widget:socket] Joining conversation:', conversationId);
     socket.emit('join', `conversation:${conversationId}`);
     socket.emit('presence', { conversationId, sender: 'visitor', status: 'online' });
 
     const handleEvent = (event: any) => {
+      console.log('[widget:socket] Event received:', event);
       if (event?.conversationId && event.conversationId !== conversationId) {
+        console.log('[widget:socket] Event for different conversation, ignoring');
         return;
       }
       if (event?.type === 'message:new' && event.message) {
+        console.log('[widget:socket] New message received:', event.message);
         setMessages((prev) => {
           if (prev.some((message) => message.id === event.message.id)) {
+            console.log('[widget:socket] Message already exists, skipping');
             return prev;
           }
           return [...prev, event.message];
         });
       }
       if (event?.type === 'typing' && event.sender === 'agent') {
-        setIsAgentTyping(true);
-        if (agentTypingTimeoutRef.current) {
-          clearTimeout(agentTypingTimeoutRef.current);
+        console.log('[widget:socket] Agent typing event:', event);
+        
+        if (event.status === 'stop') {
+          console.log('[widget:socket] Agent stopped typing');
+          setIsAgentTyping(false);
+          if (agentTypingTimeoutRef.current) {
+            clearTimeout(agentTypingTimeoutRef.current);
+          }
+        } else {
+          console.log('[widget:socket] Agent is typing');
+          setIsAgentTyping(true);
+          if (agentTypingTimeoutRef.current) {
+            clearTimeout(agentTypingTimeoutRef.current);
+          }
+          agentTypingTimeoutRef.current = setTimeout(() => {
+            console.log('[widget:socket] Typing timeout');
+            setIsAgentTyping(false);
+          }, 2000);
         }
-        agentTypingTimeoutRef.current = setTimeout(() => setIsAgentTyping(false), 2000);
       }
       if (event?.type === 'presence' && event.sender === 'agent') {
+        console.log('[widget:socket] Agent presence:', event.status);
         setAgentStatus(event.status === 'online' ? 'online' : 'offline');
       }
     };
@@ -205,6 +251,7 @@ export default function ChatWidget({ appId, initialColors }: ChatWidgetProps) {
     socket.on('event', handleEvent);
 
     return () => {
+      console.log('[widget:socket] Cleaning up socket listeners');
       socket.emit('presence', { conversationId, sender: 'visitor', status: 'offline' });
       socket.emit('leave', `conversation:${conversationId}`);
       socket.off('event', handleEvent);
@@ -216,13 +263,32 @@ export default function ChatWidget({ appId, initialColors }: ChatWidgetProps) {
   }, [conversationId]);
 
   const handleTyping = () => {
-    if (!socketRef.current || !conversationId) return;
-    socketRef.current.emit('typing', { conversationId, sender: 'visitor' });
+    if (!socketRef.current || !conversationId) {
+      console.log('[widget:typing] Cannot emit typing:', {
+        hasSocket: !!socketRef.current,
+        hasConversationId: !!conversationId,
+      });
+      return;
+    }
+    
+    console.log('[widget:typing] Emitting visitor typing');
+    socketRef.current.emit('typing', { 
+      conversationId, 
+      sender: 'visitor',
+      status: 'typing'
+    });
+    
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
+    
     typingTimeoutRef.current = setTimeout(() => {
-      socketRef.current?.emit('typing', { conversationId, sender: 'visitor', status: 'stop' });
+      console.log('[widget:typing] Emitting stop typing');
+      socketRef.current?.emit('typing', { 
+        conversationId, 
+        sender: 'visitor', 
+        status: 'stop' 
+      });
     }, 1500);
   };
 
@@ -233,7 +299,15 @@ export default function ChatWidget({ appId, initialColors }: ChatWidgetProps) {
   }, [isOpen, isMinimized]);
 
   const handleSendMessage = async () => {
-    if (!inputMessage.trim() || isLoading || !appId || !sessionToken) return;
+    if (!inputMessage.trim() || isLoading || !appId || !sessionToken) {
+      console.log('[widget:send] Cannot send:', { 
+        hasInput: !!inputMessage.trim(), 
+        isLoading, 
+        hasAppId: !!appId, 
+        hasSessionToken: !!sessionToken 
+      });
+      return;
+    }
 
     const pendingMessage: Message = {
       id: `temp-${Date.now()}`,
@@ -242,6 +316,7 @@ export default function ChatWidget({ appId, initialColors }: ChatWidgetProps) {
       createdAt: new Date().toISOString(),
     };
 
+    console.log('[widget:send] Sending message:', pendingMessage.content);
     setMessages((prev) => [...prev, pendingMessage]);
     setInputMessage('');
     setIsLoading(true);
@@ -259,15 +334,20 @@ export default function ChatWidget({ appId, initialColors }: ChatWidgetProps) {
         }),
       });
 
+      console.log('[widget:send] Response status:', response.status);
+
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('[widget:send] Error response:', errorData);
         throw new Error('Error en la respuesta del servidor');
       }
 
       const data = await response.json();
+      console.log('[widget:send] Response data:', data);
       setMessages(data.messages ?? []);
       setConversationId(data.conversation?.id ?? conversationId);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('[widget:send] Error:', error);
       setMessages((prev) => prev.filter((message) => message.id !== pendingMessage.id));
     } finally {
       setIsLoading(false);

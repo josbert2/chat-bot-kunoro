@@ -3,7 +3,7 @@ import { headers, cookies } from "next/headers";
 import { randomUUID } from "crypto";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { accounts, user } from "@/db/schema";
+import { accounts, user, sites } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function POST() {
@@ -36,9 +36,11 @@ export async function POST() {
   }
 
   let accountId = existingUser.accountId as string | null;
+  let isNewAccount = false;
 
   if (!accountId) {
     accountId = randomUUID();
+    isNewAccount = true;
 
     await db.insert(accounts).values({
       id: accountId,
@@ -72,6 +74,39 @@ export async function POST() {
         useAi: typeof data.useAi === "boolean" ? data.useAi : null,
       })
       .where(eq(accounts.id, accountId));
+  }
+
+  // Crear un sitio por defecto si es una cuenta nueva o si no tiene sitios
+  const existingSite = await db.query.sites.findFirst({
+    where: eq(sites.accountId, accountId),
+  });
+
+  if (!existingSite) {
+    const siteId = randomUUID();
+    const appId = `app_${randomUUID().replace(/-/g, "")}`;
+    const accountName = existingUser.name ?? "Mi sitio";
+
+    await db.insert(sites).values({
+      id: siteId,
+      accountId,
+      name: `${accountName} - Sitio Principal`,
+      appId,
+      domain: data.domain || "localhost:3000",
+      widgetConfigJson: JSON.stringify({
+        colors: {
+          background: "#6366f1",
+          action: "#4f46e5",
+        },
+        position: "bottom-right",
+        welcomeMessage: "¡Hola! ¿En qué podemos ayudarte?",
+      }),
+    });
+
+    console.log(`[onboarding] Site created for account ${accountId}:`, {
+      siteId,
+      appId,
+      name: `${accountName} - Sitio Principal`,
+    });
   }
 
   return NextResponse.json({ ok: true });
