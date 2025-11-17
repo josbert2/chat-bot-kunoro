@@ -1,0 +1,252 @@
+---
+description: Reglas para desarrollar un clon tipo Tidio (chat widget + panel + backend) en este repo.
+globs: "**/*"
+alwaysApply: true
+---
+
+# Proyecto: Clon de Tidio (Live Chat + Widget + Panel)
+
+## Visión del proyecto
+
+- Este proyecto es un clon tipo **Tidio**:  
+  - Un **widget de chat embebible** en cualquier web (script + bubble flotante).  
+  - Un **panel de administración** para agentes/empresa (ver conversaciones, responder, configurar).  
+  - Un **backend en tiempo real** para manejar usuarios, mensajes, estados y configuraciones.
+
+- Objetivo general:
+  - Código **modular**, **tipado** y **fácil de escalar**.
+  - Que se pueda desplegar como SaaS multi-tenant (múltimos clientes usando el mismo backend).
+
+---
+
+## Stack (asumido, adaptar si es distinto)
+
+> Si detectas que el stack real difiere, AJÚSTATE a lo que ya exista en el repo.
+
+- **Frontend Panel**:
+  - React + TypeScript (idealmente Next.js).
+  - TailwindCSS para estilos.
+  - React Query / TanStack Query para data fetching.
+
+- **Widget de chat**:
+  - React + TypeScript montado dentro de un bundle embebible.
+  - Se carga con un `<script src="https://.../widget.js" data-public-key="..."></script>`.
+  - Usa **Shadow DOM** o un `div` aislado para no romper estilos de la web del cliente.
+
+- **Backend**:
+  - Node.js (NestJS / Express) + TypeScript.
+  - WebSockets (Socket.IO o similar) para tiempo real.
+  - REST/HTTP para configuración (conversaciones, integraciones, usuarios, etc).
+  - DB: PostgreSQL o MySQL con ORM (Prisma / TypeORM).
+
+- **Infra básica**:
+  - Variables de entorno (`.env`) para credenciales, URLs, keys.
+  - Docker / docker-compose recomendado, pero sigue lo que ya haya en el repo.
+
+---
+
+## Arquitectura general
+
+### 1. Entidades principales
+
+Cuando crees modelos, interfaces o schemas, sigue esta estructura mental:
+
+- `Account` / `Workspace`
+  - Representa a la empresa o cliente que usa el chat.
+- `User`
+  - Usuario final (visitante de la web).
+- `Agent`
+  - Persona que atiende desde el panel.
+- `Conversation`
+  - Canal entre uno o varios Agents y un User.
+- `Message`
+  - Mensajes dentro de una Conversation.
+- `WidgetSettings`
+  - Colores, posición, textos, idioma, etc.
+- `Integration`
+  - Integraciones futuras (email, WhatsApp, CRM, etc).
+
+Siempre que debas añadir algo nuevo, piensa **si encaja en estas entidades** antes de inventar una nueva.
+
+### 2. Organización de código (ejemplo)
+
+Ajusta el código nuevo a la estructura existente. Si no existe, sugiere algo así:
+
+- `apps/`
+  - `panel/` (frontend del agente)
+  - `widget/` (frontend embebible)
+  - `backend/` (API + sockets)
+- `packages/`
+  - `ui/` (componentes compartidos React si aplica)
+  - `types/` (tipos compartidos: Message, Conversation, etc)
+  - `utils/` (helpers genéricos)
+
+No mezclar código del widget y del panel en el mismo directorio si se pueden separar.
+
+---
+
+## Regla para el Widget de Chat
+
+Cuando trabajes en el **widget**:
+
+1. **Embebible**
+   - Debe poder incluirse en cualquier web con **un único script**.
+   - Evita dependencias globales en `window` salvo un namespace claro (ej: `window.TidioClone`).
+   - Ofrece una API mínima:
+     - `window.TidioClone.init({ publicKey, language, ... })`
+     - `window.TidioClone.open()`, `close()`, `toggle()`
+
+2. **Estilos**
+   - Aísla estilos:
+     - Preferible: Shadow DOM.
+     - Si no, todas las clases deben tener prefijo claro: `tc-` (ej: `tc-chat-bubble`, `tc-message`).
+   - No resetear globalmente `body`, `html`, etc.
+
+3. **Estado básico**
+   - Mantener:
+     - Lista de mensajes.
+     - Estado de conexión (online/offline).
+     - Estado de escritura (typing) del agente.
+   - Mantener identificador de visitante en localStorage o cookie (ej: `tc_visitor_id`).
+
+4. **Conexión en tiempo real**
+   - Usa una única conexión WebSocket por widget.
+   - Reintentos exponenciales si se pierde conexión.
+   - No bloquear el render del widget si falla el socket: mostrar modo offline.
+
+---
+
+## Regla para el Panel / Dashboard
+
+Cuando trabajes en el **panel de administración**:
+
+1. **UX / UI**
+   - Layout típico de soporte:
+     - Sidebar izquierda con lista de conversaciones.
+     - Panel central con mensajes.
+     - Panel derecho opcional con info del usuario / notas.
+   - Mantén una UI simple: usa componentes reutilizables y Tailwind utilitario.
+
+2. **Data fetching**
+   - Usa hooks de data (ej: React Query).
+   - Siempre define:
+     - `queryKey` claros (`['conversations', workspaceId]`, `['messages', conversationId]`).
+     - Manejo de loading/error.
+   - Pagina listas grandes (conversaciones, mensajes, usuarios).
+
+3. **Estados de conversación**
+   - Define estados mínimos:
+     - `open`, `pending`, `closed`.
+   - No hardcodear strings en todos lados. Usa enums / constantes.
+
+---
+
+## Regla para el Backend
+
+Cuando edites/crees código de backend:
+
+1. **Endpoints REST básicos**
+   - `/api/conversations`
+     - `GET` lista de conversaciones.
+     - `POST` crear nueva conversación (si un usuario escribe por primera vez).
+   - `/api/conversations/:id/messages`
+     - `GET` mensajes paginados.
+     - `POST` crear mensaje (desde panel o desde widget).
+   - `/api/widget/settings`
+     - `GET` trae configuraciones públicas por `publicKey`.
+
+   Siempre documentar endpoints nuevos con:
+   - parámetros de entrada,
+   - respuesta esperada,
+   - posibles códigos de error.
+
+2. **WebSockets**
+   - Canal por workspace y/o conversation:
+     - Room por `conversationId`.
+   - Eventos típicos:
+     - `message:new`
+     - `conversation:updated`
+     - `agent:typing`
+   - Estructura del payload:
+     ```ts
+     type SocketMessage = {
+       id: string;
+       conversationId: string;
+       senderType: 'user' | 'agent' | 'system';
+       text: string;
+       createdAt: string;
+     }
+     ```
+
+3. **Seguridad**
+   - Nunca exponer `workspaceId` o IDs internos sin validar permisos.
+   - Autenticación:
+     - Widget: `publicKey` + token opcional.
+     - Panel: JWT / session-based.
+   - No loggear datos sensibles (tokens, contraseñas, etc.).
+
+---
+
+## Estándares de código
+
+Siempre que generes o modifiques código:
+
+1. **TypeScript**
+   - No dejar `any` sueltos.
+   - Usa `type` o `interface` para datos compartidos.
+   - Tipar props de componentes y respuestas de API.
+
+2. **Nombres**
+   - Inglés para código (`ConversationList`, `MessageBubble`, `getConversations`).
+   - Español solo en textos visibles para el usuario.
+
+3. **Estructura de componentes**
+   - Pequeños y enfocados.
+   - No meter lógica de negocio compleja en el JSX.
+   - Extraer hooks (`useConversation`, `useMessages`) cuando haya lógica reutilizable.
+
+4. **Errores**
+   - Manejar estados de error y loading en UI.
+   - En backend, usar un middleware global de errores (o filtro en NestJS).
+   - Devolver mensajes de error consistentes:
+     ```json
+     { "error": "MESSAGE_HERE", "code": "ERROR_CODE" }
+     ```
+
+---
+
+## Tests y verificación
+
+Cuando agregues nueva funcionalidad:
+
+- Añade al menos:
+  - Test de unidad para lógica crítica (formatters, servicios de mensajes, etc.).
+  - Test de integración mínima para APIs importantes (crear mensaje, listar conversaciones).
+- Si no hay framework de testing configurado, sugiere uno acorde al stack existente (Jest / Vitest).
+
+---
+
+## Cómo debe comportarse Cursor en este repo
+
+Cuando el usuario pida cambios o features relacionados con el chat tipo Tidio:
+
+1. **Primero entiende el contexto**
+   - Revisa rápidamente:
+     - Estructura de `apps/` o `src/`.
+     - Tipos compartidos (`types/`, `@types` o `packages/types`).
+     - Cómo ya se está manejando el socket, si existe.
+
+2. **Respeta patrones existentes**
+   - Sigue estilos de import, patrones de hooks, carpetas, naming.
+   - No inventes nuevas maneras si ya hay un patrón claro.
+
+3. **Propón, no solo generes**
+   - Si ves una forma más limpia de estructurar (ej: mover lógica a un hook, servicio, etc.), explícalo brevemente antes o después del cambio.
+   - Señala posibles problemas de escalabilidad (ej: demasiados estados globales, falta de paginación, etc.).
+
+4. **No rompas el widget embebible**
+   - Nunca introduzcas dependencias que asuman control total del DOM de la página cliente.
+   - No bloquees el `window.onload`.
+   - Asegúrate de que el bundle sea lo más liviano posible y con lazy loading cuando se pueda.
+
+---
