@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo, CSSProperties } from 'react';
+import { io, Socket } from 'socket.io-client';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageCircle, X, Send, Minimize2 } from 'lucide-react';
 import {
   WidgetColors,
@@ -8,11 +10,14 @@ import {
   isDarkHexColor,
 } from '@/lib/widget-config';
 
+const SESSION_STORAGE_KEY = 'bookforce_session_token';
+
 interface Message {
   id: string;
-  role: 'user' | 'assistant';
+  senderType: "visitor" | "agent" | "bot";
   content: string;
-  timestamp: Date;
+  intent?: string | null;
+  createdAt?: string;
 }
 
 type ChatWidgetProps = {
@@ -29,18 +34,19 @@ export default function ChatWidget({ appId, initialColors }: ChatWidgetProps) {
   const [colors, setColors] = useState<WidgetColors>(initial);
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: '¡Hola! 👋\n\nEstás hablando con Bookforce. ¿En qué puedo ayudarte?',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [isInitializing, setIsInitializing] = useState(false);
+  const [agentStatus, setAgentStatus] = useState<"online" | "offline">("offline");
+  const [isAgentTyping, setIsAgentTyping] = useState(false);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const socketRef = useRef<Socket | null>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const agentTypingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setColors(initial);
@@ -64,10 +70,54 @@ export default function ChatWidget({ appId, initialColors }: ChatWidgetProps) {
     }
 
     fetchConfig();
-    const interval = setInterval(fetchConfig, 60_000);
+
     return () => {
       cancelled = true;
-      clearInterval(interval);
+    };
+  }, [appId]);
+
+  useEffect(() => {
+    if (!appId) return;
+    let cancelled = false;
+
+    async function initVisitor() {
+      const storedToken = typeof window !== 'undefined' ? window.localStorage.getItem(SESSION_STORAGE_KEY) : null;
+      setIsInitializing(true);
+      try {
+        const response = await fetch('/api/widget/init', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            appId,
+            sessionToken: storedToken,
+          }),
+        });
+        if (!response.ok) {
+          throw new Error('No se pudo inicializar el chat');
+        }
+        const data = await response.json();
+        if (!cancelled) {
+          setSessionToken(data.sessionToken);
+          setMessages(data.messages ?? []);
+          setConversationId(data.conversation?.id ?? null);
+          if (data.sessionToken && typeof window !== 'undefined') {
+            window.localStorage.setItem(SESSION_STORAGE_KEY, data.sessionToken);
+          }
+        }
+      } catch (error) {
+        console.error('[widget:init]', error);
+      } finally {
+        if (!cancelled) {
+          setIsInitializing(false);
+        }
+      }
+    }
+
+    initVisitor();
+    return () => {
+      cancelled = true;
     };
   }, [appId]);
 
@@ -107,36 +157,105 @@ export default function ChatWidget({ appId, initialColors }: ChatWidgetProps) {
   }, [messages]);
 
   useEffect(() => {
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!conversationId) return;
+
+    if (!socketRef.current) {
+      socketRef.current = io({
+        path: '/api/socket/io',
+      });
+    }
+
+    const socket = socketRef.current;
+    socket.emit('join', `conversation:${conversationId}`);
+    socket.emit('presence', { conversationId, sender: 'visitor', status: 'online' });
+
+    const handleEvent = (event: any) => {
+      if (event?.conversationId && event.conversationId !== conversationId) {
+        return;
+      }
+      if (event?.type === 'message:new' && event.message) {
+        setMessages((prev) => {
+          if (prev.some((message) => message.id === event.message.id)) {
+            return prev;
+          }
+          return [...prev, event.message];
+        });
+      }
+      if (event?.type === 'typing' && event.sender === 'agent') {
+        setIsAgentTyping(true);
+        if (agentTypingTimeoutRef.current) {
+          clearTimeout(agentTypingTimeoutRef.current);
+        }
+        agentTypingTimeoutRef.current = setTimeout(() => setIsAgentTyping(false), 2000);
+      }
+      if (event?.type === 'presence' && event.sender === 'agent') {
+        setAgentStatus(event.status === 'online' ? 'online' : 'offline');
+      }
+    };
+
+    socket.on('event', handleEvent);
+
+    return () => {
+      socket.emit('presence', { conversationId, sender: 'visitor', status: 'offline' });
+      socket.emit('leave', `conversation:${conversationId}`);
+      socket.off('event', handleEvent);
+      if (agentTypingTimeoutRef.current) {
+        clearTimeout(agentTypingTimeoutRef.current);
+      }
+      setIsAgentTyping(false);
+    };
+  }, [conversationId]);
+
+  const handleTyping = () => {
+    if (!socketRef.current || !conversationId) return;
+    socketRef.current.emit('typing', { conversationId, sender: 'visitor' });
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    typingTimeoutRef.current = setTimeout(() => {
+      socketRef.current?.emit('typing', { conversationId, sender: 'visitor', status: 'stop' });
+    }, 1500);
+  };
+
+  useEffect(() => {
     if (isOpen && !isMinimized) {
       inputRef.current?.focus();
     }
   }, [isOpen, isMinimized]);
 
   const handleSendMessage = async () => {
-    if (!inputMessage.trim() || isLoading) return;
+    if (!inputMessage.trim() || isLoading || !appId || !sessionToken) return;
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
+    const pendingMessage: Message = {
+      id: `temp-${Date.now()}`,
+      senderType: 'visitor',
       content: inputMessage,
-      timestamp: new Date(),
+      createdAt: new Date().toISOString(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => [...prev, pendingMessage]);
     setInputMessage('');
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('/api/widget/messages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          messages: [...messages, userMessage].map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
+          appId,
+          sessionToken,
+          message: pendingMessage.content,
         }),
       });
 
@@ -145,24 +264,11 @@ export default function ChatWidget({ appId, initialColors }: ChatWidgetProps) {
       }
 
       const data = await response.json();
-
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: data.message,
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
+      setMessages(data.messages ?? []);
+      setConversationId(data.conversation?.id ?? conversationId);
     } catch (error) {
       console.error('Error:', error);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: 'Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta de nuevo.',
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      setMessages((prev) => prev.filter((message) => message.id !== pendingMessage.id));
     } finally {
       setIsLoading(false);
     }
@@ -220,8 +326,12 @@ export default function ChatWidget({ appId, initialColors }: ChatWidgetProps) {
               <div>
                 <h3 className={`font-bold text-[15px] ${headerTitleClass}`}>Bookforce</h3>
                 <p className={`text-[12px] flex items-center font-normal ${headerSubtitleClass}`}>
-                  <span className="w-2 h-2 bg-green-500 rounded-full mr-1.5"></span>
-                  En línea
+                  <span
+                    className={`w-2 h-2 rounded-full mr-1.5 ${
+                      agentStatus === 'online' ? 'bg-green-500' : 'bg-gray-400'
+                    }`}
+                  ></span>
+                  {agentStatus === 'online' ? 'Agente disponible' : 'En este momento offline'}
                 </p>
               </div>
             </div>
@@ -246,50 +356,65 @@ export default function ChatWidget({ appId, initialColors }: ChatWidgetProps) {
           {/* Messages */}
           {!isMinimized && (
             <>
-              <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar bg-white">
-                {messages.map((message) => {
-                  const isUser = message.role === 'user';
-                  return (
-                    <div
-                      key={message.id}
-                      className={`flex ${isUser ? 'justify-end' : 'justify-start'} animate-fade-in`}
-                    >
+              <ScrollArea className="flex-1 bg-white">
+                <div className="p-5 space-y-4">
+                  {messages.map((message) => {
+                    const isUser = message.senderType === 'visitor';
+                    return (
                       <div
-                        className={`max-w-[80%] rounded-[18px] px-4 py-3 ${
-                          isUser ? 'text-white' : 'bg-gray-100 text-gray-900'
-                        }`}
-                        style={isUser ? { backgroundColor: colors.action } : undefined}
+                        key={message.id}
+                        className={`flex ${isUser ? 'justify-end' : 'justify-start'} animate-fade-in`}
                       >
-                        <p className="text-[14.5px] leading-[1.45] font-normal whitespace-pre-wrap">
-                          {message.content}
-                        </p>
-                        <p
-                          className={`text-[11px] mt-1 font-medium opacity-70 ${
-                            isUser ? 'text-white/80' : 'text-gray-600'
+                        <div
+                          className={`max-w-[80%] rounded-[18px] px-4 py-3 ${
+                            isUser ? 'text-white' : 'bg-gray-100 text-gray-900'
                           }`}
+                          style={isUser ? { backgroundColor: colors.action } : undefined}
                         >
-                          {message.timestamp.toLocaleTimeString('es-ES', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </p>
+                          <p className="text-[14.5px] leading-[1.45] font-normal whitespace-pre-wrap">
+                            {message.content}
+                          </p>
+                          <p
+                            className={`text-[11px] mt-1 font-medium opacity-70 ${
+                              isUser ? 'text-white/80' : 'text-gray-600'
+                            }`}
+                          >
+                            {message.createdAt
+                              ? new Date(message.createdAt).toLocaleTimeString('es-ES', {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })
+                              : ''}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {(isLoading || isInitializing) && (
+                    <div className="flex justify-start animate-fade-in">
+                      <div className="bg-gray-100 text-gray-800 rounded-2xl px-4 py-3">
+                        <div className="flex space-x-1.5">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        </div>
                       </div>
                     </div>
-                  );
-                })}
-                {isLoading && (
-                  <div className="flex justify-start animate-fade-in">
-                    <div className="bg-gray-100 text-gray-800 rounded-2xl px-4 py-3">
-                      <div className="flex space-x-1.5">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  )}
+                  {isAgentTyping && (
+                    <div className="flex justify-start animate-fade-in">
+                      <div className="bg-gray-100 text-gray-800 rounded-2xl px-4 py-3">
+                        <div className="flex space-x-1.5">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+              </ScrollArea>
 
               {/* Input */}
               <div className="p-4 bg-white border-t border-gray-200">
@@ -298,7 +423,10 @@ export default function ChatWidget({ appId, initialColors }: ChatWidgetProps) {
                     ref={inputRef}
                     type="text"
                     value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
+                    onChange={(e) => {
+                      setInputMessage(e.target.value);
+                      handleTyping();
+                    }}
                     onKeyPress={handleKeyPress}
                     placeholder="Escribe un mensaje..."
                     className="flex-1 px-4 py-3 text-[14.5px] font-normal border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent resize-none placeholder:text-gray-400 placeholder:font-normal"

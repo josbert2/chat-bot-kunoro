@@ -13,7 +13,7 @@ const poolConnection = mysql.createPool({
   queueLimit: 0,
 });
 
-export const db = drizzle(poolConnection, { schema, mode: "default" });
+export const db = drizzle(poolConnection, { schema, mode: "planetscale" });
 
 process.on("SIGINT", async () => {
   await poolConnection.end();

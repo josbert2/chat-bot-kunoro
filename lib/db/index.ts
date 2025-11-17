@@ -15,7 +15,7 @@ const connection = mysql.createPool({
 });
 
 // Crear instancia de Drizzle
-export const db = drizzle(connection, { schema, mode: 'default' });
+export const db = drizzle(connection, { schema, mode: 'planetscale' });
 
 // Función para verificar la conexión
 export async function testConnection() {
