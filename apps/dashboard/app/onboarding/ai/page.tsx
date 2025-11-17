@@ -32,11 +32,32 @@ export default function OnboardingAiPage() {
 
     setError(null);
 
+    // Leer todos los datos del onboarding de la cookie
+    const existingData = readKunoroUserCookie();
+    const token = existingData.token;
+
+    if (!token) {
+      setError("No se encontró token de autenticación. Por favor, regístrate nuevamente.");
+      return;
+    }
+
+    // Preparar datos finales del onboarding (sin el token)
+    const onboardingData = {
+      businessModel: existingData.businessModel,
+      industry: existingData.industry,
+      conversationsRange: existingData.conversationsRange,
+      goalId: existingData.goalId,
+      visitorsRange: existingData.visitorsRange,
+      platform: existingData.platform,
+      agentCount: existingData.agentCount,
+      useAi,
+    };
+
+    // Actualizar cookie con useAi
     if (typeof document !== "undefined") {
-      const existing = readKunoroUserCookie();
       const payload = encodeURIComponent(
         JSON.stringify({
-          ...existing,
+          ...existingData,
           useAi,
         }),
       );
@@ -44,17 +65,28 @@ export default function OnboardingAiPage() {
     }
 
     try {
+      console.log('🔵 [ONBOARDING] Enviando datos del onboarding al backend');
+      
       const res = await fetch("/api/onboarding/complete", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(onboardingData),
       });
 
       if (!res.ok) {
-        setError("No se pudo guardar la información del tour. Intenta de nuevo.");
+        const errorData = await res.json().catch(() => ({}));
+        console.error('❌ [ONBOARDING] Error:', errorData);
+        setError(errorData.message || "No se pudo guardar la información del tour. Intenta de nuevo.");
         return;
       }
 
+      console.log('✅ [ONBOARDING] Tour completado exitosamente');
       router.push("/dashboard");
-    } catch {
+    } catch (error) {
+      console.error('❌ [ONBOARDING] Error en catch:', error);
       setError("Hubo un error de conexión al guardar el tour.");
     }
   }

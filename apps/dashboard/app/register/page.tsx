@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signUp } from "@/lib/auth-client";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -17,39 +18,46 @@ export default function RegisterPage() {
     setIsSubmitting(true);
     setError(null);
 
+    console.log('🔵 [REGISTER] Iniciando registro con Better Auth:', { name, email });
+
     try {
-      const res = await fetch("/api/auth/sign-up/email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
+      const result = await signUp.email({
+        name,
+        email,
+        password,
       });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setError(data?.message || "No se pudo crear la cuenta. Verifica los datos.");
+      console.log('🔵 [REGISTER] Resultado:', result);
+
+      if (result.error) {
+        console.error('❌ [REGISTER] Error:', result.error);
+        setError(result.error.message || "No se pudo crear la cuenta. Verifica los datos.");
         setIsSubmitting(false);
         return;
       }
 
-      // Si todo sale bien, Better Auth crea el usuario + sesión.
-      // Guardamos datos básicos en una cookie para el tour/onboarding.
+      console.log('✅ [REGISTER] Registro exitoso');
+
+      // Better Auth maneja las cookies automáticamente
+      // Guardamos datos adicionales para el onboarding
       if (typeof document !== "undefined") {
         const payload = encodeURIComponent(
-          JSON.stringify({ name, email })
+          JSON.stringify({ 
+            name, 
+            email,
+          })
         );
-        document.cookie = `kunoro_user=${payload}; path=/; max-age=31536000`;
+        document.cookie = `kunoro_onboarding=${payload}; path=/; max-age=31536000`;
+        console.log('✅ [REGISTER] Datos de onboarding guardados en cookie');
       }
 
-      // Enviamos al tour de onboarding.
+      // Enviamos al tour de onboarding
+      console.log('🔵 [REGISTER] Redirigiendo a /onboarding');
       router.push("/onboarding");
-    } catch (e) {
-      setError("Hubo un error al conectar con el servidor. Intenta de nuevo.");
+      router.refresh();
+    } catch (e: any) {
+      console.error('❌ [REGISTER] Error en catch:', e);
+      setError(e.message || "Hubo un error al conectar con el servidor. Intenta de nuevo.");
       setIsSubmitting(false);
     }
   }

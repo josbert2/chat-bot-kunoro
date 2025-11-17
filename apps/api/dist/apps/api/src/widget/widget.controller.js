@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WidgetController = void 0;
 const common_1 = require("@nestjs/common");
@@ -37,7 +38,7 @@ __decorate([
     __param(0, (0, common_1.Headers)('x-site-key')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, widget_dto_1.WidgetInitDto]),
+    __metadata("design:paramtypes", [String, typeof (_b = typeof widget_dto_1.WidgetInitDto !== "undefined" && widget_dto_1.WidgetInitDto) === "function" ? _b : Object]),
     __metadata("design:returntype", Promise)
 ], WidgetController.prototype, "init", null);
 __decorate([
@@ -59,6 +60,6 @@ __decorate([
 ], WidgetController.prototype, "offlineForm", null);
 exports.WidgetController = WidgetController = __decorate([
     (0, common_1.Controller)('widget'),
-    __metadata("design:paramtypes", [widget_service_1.WidgetService])
+    __metadata("design:paramtypes", [typeof (_a = typeof widget_service_1.WidgetService !== "undefined" && widget_service_1.WidgetService) === "function" ? _a : Object])
 ], WidgetController);
 //# sourceMappingURL=widget.controller.js.map

@@ -12,8 +12,8 @@ var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BearerAuthGuard = void 0;
 const common_1 = require("@nestjs/common");
-const database_service_1 = require("../config/database.service");
-const schema_1 = require("../../../../db/schema");
+const database_service_1 = require("../../config/database.service");
+const schema_1 = require("../../../../../db/schema");
 const drizzle_orm_1 = require("drizzle-orm");
 let BearerAuthGuard = class BearerAuthGuard {
     constructor(dbService) {

@@ -1,8 +1,8 @@
-export declare const accounts: import("node_modules/drizzle-orm/mysql-core").MySqlTableWithColumns<{
+export declare const accounts: import("drizzle-orm/mysql-core").MySqlTableWithColumns<{
     name: "accounts";
     schema: undefined;
     columns: {
-        id: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        id: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "id";
             tableName: "accounts";
             dataType: "string";
@@ -19,7 +19,7 @@ export declare const accounts: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        name: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        name: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "name";
             tableName: "accounts";
             dataType: "string";
@@ -36,7 +36,7 @@ export declare const accounts: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        plan: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        plan: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "plan";
             tableName: "accounts";
             dataType: "string";
@@ -53,7 +53,7 @@ export declare const accounts: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        businessModel: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        businessModel: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "business_model";
             tableName: "accounts";
             dataType: "string";
@@ -70,7 +70,7 @@ export declare const accounts: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        industry: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        industry: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "industry";
             tableName: "accounts";
             dataType: "string";
@@ -87,7 +87,7 @@ export declare const accounts: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        conversationsRange: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        conversationsRange: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "conversations_range";
             tableName: "accounts";
             dataType: "string";
@@ -104,7 +104,7 @@ export declare const accounts: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        visitorsRange: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        visitorsRange: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "visitors_range";
             tableName: "accounts";
             dataType: "string";
@@ -121,7 +121,7 @@ export declare const accounts: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        platform: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        platform: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "platform";
             tableName: "accounts";
             dataType: "string";
@@ -138,7 +138,7 @@ export declare const accounts: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        agentCount: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        agentCount: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "agent_count";
             tableName: "accounts";
             dataType: "string";
@@ -155,7 +155,7 @@ export declare const accounts: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        goalId: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        goalId: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "goal_id";
             tableName: "accounts";
             dataType: "string";
@@ -172,7 +172,7 @@ export declare const accounts: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        useAi: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        useAi: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "use_ai";
             tableName: "accounts";
             dataType: "boolean";
@@ -189,7 +189,7 @@ export declare const accounts: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        createdAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        createdAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "created_at";
             tableName: "accounts";
             dataType: "date";
@@ -209,11 +209,11 @@ export declare const accounts: import("node_modules/drizzle-orm/mysql-core").MyS
     };
     dialect: "mysql";
 }>;
-export declare const sites: import("node_modules/drizzle-orm/mysql-core").MySqlTableWithColumns<{
+export declare const sites: import("drizzle-orm/mysql-core").MySqlTableWithColumns<{
     name: "sites";
     schema: undefined;
     columns: {
-        id: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        id: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "id";
             tableName: "sites";
             dataType: "string";
@@ -230,7 +230,7 @@ export declare const sites: import("node_modules/drizzle-orm/mysql-core").MySqlT
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        accountId: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        accountId: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "account_id";
             tableName: "sites";
             dataType: "string";
@@ -247,7 +247,7 @@ export declare const sites: import("node_modules/drizzle-orm/mysql-core").MySqlT
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        name: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        name: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "name";
             tableName: "sites";
             dataType: "string";
@@ -264,7 +264,7 @@ export declare const sites: import("node_modules/drizzle-orm/mysql-core").MySqlT
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        appId: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        appId: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "app_id";
             tableName: "sites";
             dataType: "string";
@@ -281,7 +281,7 @@ export declare const sites: import("node_modules/drizzle-orm/mysql-core").MySqlT
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        domain: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        domain: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "domain";
             tableName: "sites";
             dataType: "string";
@@ -298,7 +298,7 @@ export declare const sites: import("node_modules/drizzle-orm/mysql-core").MySqlT
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        widgetConfigJson: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        widgetConfigJson: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "widget_config_json";
             tableName: "sites";
             dataType: "string";
@@ -315,7 +315,7 @@ export declare const sites: import("node_modules/drizzle-orm/mysql-core").MySqlT
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        createdAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        createdAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "created_at";
             tableName: "sites";
             dataType: "date";
@@ -335,11 +335,11 @@ export declare const sites: import("node_modules/drizzle-orm/mysql-core").MySqlT
     };
     dialect: "mysql";
 }>;
-export declare const user: import("node_modules/drizzle-orm/mysql-core").MySqlTableWithColumns<{
+export declare const user: import("drizzle-orm/mysql-core").MySqlTableWithColumns<{
     name: "user";
     schema: undefined;
     columns: {
-        id: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        id: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "id";
             tableName: "user";
             dataType: "string";
@@ -356,7 +356,7 @@ export declare const user: import("node_modules/drizzle-orm/mysql-core").MySqlTa
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        name: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        name: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "name";
             tableName: "user";
             dataType: "string";
@@ -373,7 +373,7 @@ export declare const user: import("node_modules/drizzle-orm/mysql-core").MySqlTa
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        email: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        email: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "email";
             tableName: "user";
             dataType: "string";
@@ -390,7 +390,7 @@ export declare const user: import("node_modules/drizzle-orm/mysql-core").MySqlTa
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        emailVerified: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        emailVerified: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "email_verified";
             tableName: "user";
             dataType: "boolean";
@@ -407,7 +407,7 @@ export declare const user: import("node_modules/drizzle-orm/mysql-core").MySqlTa
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        image: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        image: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "image";
             tableName: "user";
             dataType: "string";
@@ -424,7 +424,7 @@ export declare const user: import("node_modules/drizzle-orm/mysql-core").MySqlTa
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        accountId: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        accountId: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "account_id";
             tableName: "user";
             dataType: "string";
@@ -441,7 +441,7 @@ export declare const user: import("node_modules/drizzle-orm/mysql-core").MySqlTa
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        createdAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        createdAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "created_at";
             tableName: "user";
             dataType: "date";
@@ -458,7 +458,7 @@ export declare const user: import("node_modules/drizzle-orm/mysql-core").MySqlTa
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        updatedAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        updatedAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "updated_at";
             tableName: "user";
             dataType: "date";
@@ -478,11 +478,11 @@ export declare const user: import("node_modules/drizzle-orm/mysql-core").MySqlTa
     };
     dialect: "mysql";
 }>;
-export declare const session: import("node_modules/drizzle-orm/mysql-core").MySqlTableWithColumns<{
+export declare const session: import("drizzle-orm/mysql-core").MySqlTableWithColumns<{
     name: "session";
     schema: undefined;
     columns: {
-        id: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        id: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "id";
             tableName: "session";
             dataType: "string";
@@ -499,7 +499,7 @@ export declare const session: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        expiresAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        expiresAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "expires_at";
             tableName: "session";
             dataType: "date";
@@ -516,7 +516,7 @@ export declare const session: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        token: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        token: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "token";
             tableName: "session";
             dataType: "string";
@@ -533,7 +533,7 @@ export declare const session: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        createdAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        createdAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "created_at";
             tableName: "session";
             dataType: "date";
@@ -550,7 +550,7 @@ export declare const session: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        updatedAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        updatedAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "updated_at";
             tableName: "session";
             dataType: "date";
@@ -567,7 +567,7 @@ export declare const session: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        ipAddress: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        ipAddress: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "ip_address";
             tableName: "session";
             dataType: "string";
@@ -584,7 +584,7 @@ export declare const session: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        userAgent: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        userAgent: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "user_agent";
             tableName: "session";
             dataType: "string";
@@ -601,7 +601,7 @@ export declare const session: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        userId: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        userId: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "user_id";
             tableName: "session";
             dataType: "string";
@@ -621,11 +621,11 @@ export declare const session: import("node_modules/drizzle-orm/mysql-core").MySq
     };
     dialect: "mysql";
 }>;
-export declare const account: import("node_modules/drizzle-orm/mysql-core").MySqlTableWithColumns<{
+export declare const account: import("drizzle-orm/mysql-core").MySqlTableWithColumns<{
     name: "account";
     schema: undefined;
     columns: {
-        id: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        id: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "id";
             tableName: "account";
             dataType: "string";
@@ -642,7 +642,7 @@ export declare const account: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        accountId: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        accountId: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "account_id";
             tableName: "account";
             dataType: "string";
@@ -659,7 +659,7 @@ export declare const account: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        providerId: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        providerId: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "provider_id";
             tableName: "account";
             dataType: "string";
@@ -676,7 +676,7 @@ export declare const account: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        userId: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        userId: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "user_id";
             tableName: "account";
             dataType: "string";
@@ -693,7 +693,7 @@ export declare const account: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        accessToken: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        accessToken: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "access_token";
             tableName: "account";
             dataType: "string";
@@ -710,7 +710,7 @@ export declare const account: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        refreshToken: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        refreshToken: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "refresh_token";
             tableName: "account";
             dataType: "string";
@@ -727,7 +727,7 @@ export declare const account: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        idToken: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        idToken: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "id_token";
             tableName: "account";
             dataType: "string";
@@ -744,7 +744,7 @@ export declare const account: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        accessTokenExpiresAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        accessTokenExpiresAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "access_token_expires_at";
             tableName: "account";
             dataType: "date";
@@ -761,7 +761,7 @@ export declare const account: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        refreshTokenExpiresAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        refreshTokenExpiresAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "refresh_token_expires_at";
             tableName: "account";
             dataType: "date";
@@ -778,7 +778,7 @@ export declare const account: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        scope: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        scope: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "scope";
             tableName: "account";
             dataType: "string";
@@ -795,7 +795,7 @@ export declare const account: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        password: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        password: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "password";
             tableName: "account";
             dataType: "string";
@@ -812,7 +812,7 @@ export declare const account: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        createdAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        createdAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "created_at";
             tableName: "account";
             dataType: "date";
@@ -829,7 +829,7 @@ export declare const account: import("node_modules/drizzle-orm/mysql-core").MySq
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        updatedAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        updatedAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "updated_at";
             tableName: "account";
             dataType: "date";
@@ -849,11 +849,11 @@ export declare const account: import("node_modules/drizzle-orm/mysql-core").MySq
     };
     dialect: "mysql";
 }>;
-export declare const verification: import("node_modules/drizzle-orm/mysql-core").MySqlTableWithColumns<{
+export declare const verification: import("drizzle-orm/mysql-core").MySqlTableWithColumns<{
     name: "verification";
     schema: undefined;
     columns: {
-        id: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        id: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "id";
             tableName: "verification";
             dataType: "string";
@@ -870,7 +870,7 @@ export declare const verification: import("node_modules/drizzle-orm/mysql-core")
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        identifier: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        identifier: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "identifier";
             tableName: "verification";
             dataType: "string";
@@ -887,7 +887,7 @@ export declare const verification: import("node_modules/drizzle-orm/mysql-core")
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        value: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        value: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "value";
             tableName: "verification";
             dataType: "string";
@@ -904,7 +904,7 @@ export declare const verification: import("node_modules/drizzle-orm/mysql-core")
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        expiresAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        expiresAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "expires_at";
             tableName: "verification";
             dataType: "date";
@@ -921,7 +921,7 @@ export declare const verification: import("node_modules/drizzle-orm/mysql-core")
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        createdAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        createdAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "created_at";
             tableName: "verification";
             dataType: "date";
@@ -938,7 +938,7 @@ export declare const verification: import("node_modules/drizzle-orm/mysql-core")
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        updatedAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        updatedAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "updated_at";
             tableName: "verification";
             dataType: "date";
@@ -958,11 +958,11 @@ export declare const verification: import("node_modules/drizzle-orm/mysql-core")
     };
     dialect: "mysql";
 }>;
-export declare const chatLogs: import("node_modules/drizzle-orm/mysql-core").MySqlTableWithColumns<{
+export declare const chatLogs: import("drizzle-orm/mysql-core").MySqlTableWithColumns<{
     name: "chat_logs";
     schema: undefined;
     columns: {
-        id: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        id: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "id";
             tableName: "chat_logs";
             dataType: "string";
@@ -979,7 +979,7 @@ export declare const chatLogs: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        intent: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        intent: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "intent";
             tableName: "chat_logs";
             dataType: "string";
@@ -996,7 +996,7 @@ export declare const chatLogs: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        userMessage: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        userMessage: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "user_message";
             tableName: "chat_logs";
             dataType: "string";
@@ -1013,7 +1013,7 @@ export declare const chatLogs: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        assistantMessage: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        assistantMessage: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "assistant_message";
             tableName: "chat_logs";
             dataType: "string";
@@ -1030,7 +1030,7 @@ export declare const chatLogs: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        createdAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        createdAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "created_at";
             tableName: "chat_logs";
             dataType: "date";
@@ -1050,11 +1050,11 @@ export declare const chatLogs: import("node_modules/drizzle-orm/mysql-core").MyS
     };
     dialect: "mysql";
 }>;
-export declare const conversations: import("node_modules/drizzle-orm/mysql-core").MySqlTableWithColumns<{
+export declare const conversations: import("drizzle-orm/mysql-core").MySqlTableWithColumns<{
     name: "conversations";
     schema: undefined;
     columns: {
-        id: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        id: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "id";
             tableName: "conversations";
             dataType: "string";
@@ -1071,7 +1071,7 @@ export declare const conversations: import("node_modules/drizzle-orm/mysql-core"
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        accountId: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        accountId: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "account_id";
             tableName: "conversations";
             dataType: "string";
@@ -1088,7 +1088,7 @@ export declare const conversations: import("node_modules/drizzle-orm/mysql-core"
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        siteId: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        siteId: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "site_id";
             tableName: "conversations";
             dataType: "string";
@@ -1105,7 +1105,7 @@ export declare const conversations: import("node_modules/drizzle-orm/mysql-core"
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        visitorId: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        visitorId: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "visitor_id";
             tableName: "conversations";
             dataType: "string";
@@ -1122,7 +1122,7 @@ export declare const conversations: import("node_modules/drizzle-orm/mysql-core"
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        status: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        status: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "status";
             tableName: "conversations";
             dataType: "string";
@@ -1139,7 +1139,7 @@ export declare const conversations: import("node_modules/drizzle-orm/mysql-core"
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        metadata: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        metadata: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "metadata";
             tableName: "conversations";
             dataType: "string";
@@ -1156,7 +1156,7 @@ export declare const conversations: import("node_modules/drizzle-orm/mysql-core"
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        createdAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        createdAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "created_at";
             tableName: "conversations";
             dataType: "date";
@@ -1173,7 +1173,7 @@ export declare const conversations: import("node_modules/drizzle-orm/mysql-core"
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        updatedAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        updatedAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "updated_at";
             tableName: "conversations";
             dataType: "date";
@@ -1193,11 +1193,11 @@ export declare const conversations: import("node_modules/drizzle-orm/mysql-core"
     };
     dialect: "mysql";
 }>;
-export declare const messages: import("node_modules/drizzle-orm/mysql-core").MySqlTableWithColumns<{
+export declare const messages: import("drizzle-orm/mysql-core").MySqlTableWithColumns<{
     name: "messages";
     schema: undefined;
     columns: {
-        id: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        id: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "id";
             tableName: "messages";
             dataType: "string";
@@ -1214,7 +1214,7 @@ export declare const messages: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        conversationId: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        conversationId: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "conversation_id";
             tableName: "messages";
             dataType: "string";
@@ -1231,7 +1231,7 @@ export declare const messages: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        role: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        role: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "role";
             tableName: "messages";
             dataType: "string";
@@ -1248,7 +1248,7 @@ export declare const messages: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        content: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        content: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "content";
             tableName: "messages";
             dataType: "string";
@@ -1265,7 +1265,7 @@ export declare const messages: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        intent: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        intent: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "intent";
             tableName: "messages";
             dataType: "string";
@@ -1282,7 +1282,7 @@ export declare const messages: import("node_modules/drizzle-orm/mysql-core").MyS
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        createdAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        createdAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "created_at";
             tableName: "messages";
             dataType: "date";
@@ -1302,11 +1302,11 @@ export declare const messages: import("node_modules/drizzle-orm/mysql-core").MyS
     };
     dialect: "mysql";
 }>;
-export declare const apiTokens: import("node_modules/drizzle-orm/mysql-core").MySqlTableWithColumns<{
+export declare const apiTokens: import("drizzle-orm/mysql-core").MySqlTableWithColumns<{
     name: "api_tokens";
     schema: undefined;
     columns: {
-        id: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        id: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "id";
             tableName: "api_tokens";
             dataType: "string";
@@ -1323,7 +1323,7 @@ export declare const apiTokens: import("node_modules/drizzle-orm/mysql-core").My
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        name: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        name: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "name";
             tableName: "api_tokens";
             dataType: "string";
@@ -1340,7 +1340,7 @@ export declare const apiTokens: import("node_modules/drizzle-orm/mysql-core").My
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        token: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        token: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "token";
             tableName: "api_tokens";
             dataType: "string";
@@ -1357,7 +1357,7 @@ export declare const apiTokens: import("node_modules/drizzle-orm/mysql-core").My
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        accountId: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        accountId: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "account_id";
             tableName: "api_tokens";
             dataType: "string";
@@ -1374,7 +1374,7 @@ export declare const apiTokens: import("node_modules/drizzle-orm/mysql-core").My
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        userId: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        userId: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "user_id";
             tableName: "api_tokens";
             dataType: "string";
@@ -1391,7 +1391,7 @@ export declare const apiTokens: import("node_modules/drizzle-orm/mysql-core").My
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        lastUsedAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        lastUsedAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "last_used_at";
             tableName: "api_tokens";
             dataType: "date";
@@ -1408,7 +1408,7 @@ export declare const apiTokens: import("node_modules/drizzle-orm/mysql-core").My
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        expiresAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        expiresAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "expires_at";
             tableName: "api_tokens";
             dataType: "date";
@@ -1425,7 +1425,7 @@ export declare const apiTokens: import("node_modules/drizzle-orm/mysql-core").My
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        isActive: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        isActive: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "is_active";
             tableName: "api_tokens";
             dataType: "boolean";
@@ -1442,7 +1442,7 @@ export declare const apiTokens: import("node_modules/drizzle-orm/mysql-core").My
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        scopes: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        scopes: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "scopes";
             tableName: "api_tokens";
             dataType: "string";
@@ -1459,7 +1459,7 @@ export declare const apiTokens: import("node_modules/drizzle-orm/mysql-core").My
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        createdAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        createdAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "created_at";
             tableName: "api_tokens";
             dataType: "date";
@@ -1476,7 +1476,7 @@ export declare const apiTokens: import("node_modules/drizzle-orm/mysql-core").My
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        updatedAt: import("node_modules/drizzle-orm/mysql-core").MySqlColumn<{
+        updatedAt: import("drizzle-orm/mysql-core").MySqlColumn<{
             name: "updated_at";
             tableName: "api_tokens";
             dataType: "date";

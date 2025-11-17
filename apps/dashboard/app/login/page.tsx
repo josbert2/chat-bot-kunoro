@@ -4,6 +4,8 @@ import { useState, FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -16,29 +18,41 @@ export default function LoginPage() {
     setIsSubmitting(true);
     setError(null);
 
+    console.log('🔵 [LOGIN] Iniciando login:', { email });
+
     try {
-      const res = await fetch("/api/auth/sign-in/email", {
+      // Llamar directo al API Express
+      const res = await fetch(`${API_URL}/v1/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        body: JSON.stringify({ email, password }),
       });
+
+      console.log('🔵 [LOGIN] Response status:', res.status);
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
+        console.error('❌ [LOGIN] Error:', data);
         setError(data?.message || "No se pudo iniciar sesión. Verifica tus datos.");
         setIsSubmitting(false);
         return;
       }
 
-      // Better Auth debería setear cookies httpOnly en esta respuesta.
-      // Luego redirigimos al dashboard.
+      const data = await res.json();
+      console.log('✅ [LOGIN] Login exitoso');
+
+      // Guardar token y datos en localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem("auth_token", data.token);
+        localStorage.setItem("user_data", JSON.stringify(data.user));
+      }
+
+      console.log('🔵 [LOGIN] Redirigiendo a /dashboard');
       router.push("/dashboard");
-    } catch (e) {
+    } catch (e: any) {
+      console.error('❌ [LOGIN] Error en catch:', e);
       setError("Hubo un error al conectar con el servidor. Intenta de nuevo.");
       setIsSubmitting(false);
     }

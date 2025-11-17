@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
@@ -22,10 +23,35 @@ let AuthController = class AuthController {
         this.authService = authService;
     }
     async register(body) {
-        return this.authService.register(body);
+        console.log('🔵 [AUTH CONTROLLER] POST /auth/register recibido:', {
+            name: body.name,
+            email: body.email,
+            hasPassword: !!body.password,
+        });
+        try {
+            const result = await this.authService.register(body);
+            console.log('✅ [AUTH CONTROLLER] Registro exitoso');
+            return result;
+        }
+        catch (error) {
+            console.error('❌ [AUTH CONTROLLER] Error en registro:', error.message);
+            throw error;
+        }
     }
     async login(body) {
-        return this.authService.login(body);
+        console.log('🔵 [AUTH CONTROLLER] POST /auth/login recibido:', {
+            email: body.email,
+            hasPassword: !!body.password,
+        });
+        try {
+            const result = await this.authService.login(body);
+            console.log('✅ [AUTH CONTROLLER] Login exitoso');
+            return result;
+        }
+        catch (error) {
+            console.error('❌ [AUTH CONTROLLER] Error en login:', error.message);
+            throw error;
+        }
     }
     async refresh(body) {
         return this.authService.refresh(body.refreshToken);
@@ -61,11 +87,11 @@ __decorate([
     (0, common_1.UseGuards)(bearer_auth_guard_1.BearerAuthGuard),
     __param(0, (0, bearer_auth_decorator_1.BearerAuth)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [typeof (_b = typeof bearer_auth_decorator_1.AuthContext !== "undefined" && bearer_auth_decorator_1.AuthContext) === "function" ? _b : Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "getMe", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [auth_service_1.AuthService])
+    __metadata("design:paramtypes", [typeof (_a = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _a : Object])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

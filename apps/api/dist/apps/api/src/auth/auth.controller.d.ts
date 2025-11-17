@@ -7,57 +7,13 @@ export declare class AuthController {
         name: string;
         email: string;
         password: string;
-    }): Promise<{
-        token: string;
-        user: {
-            id: string;
-            name: string;
-            email: string;
-        };
-        workspace: {
-            id: string;
-            name: string;
-            plan: string;
-        } | null;
-    }>;
+    }): Promise<any>;
     login(body: {
         email: string;
         password: string;
-    }): Promise<{
-        token: string;
-        user: {
-            id: string;
-            name: string;
-            email: string;
-        };
-        workspace: {
-            id: string;
-            name: string;
-            plan: string;
-        } | null;
-    }>;
+    }): Promise<any>;
     refresh(body: {
         refreshToken: string;
-    }): Promise<void>;
-    getMe(auth: AuthContext): Promise<{
-        user: {
-            id: string;
-            name: string;
-            email: string;
-        };
-        workspace: {
-            id: string;
-            name: string;
-            plan: string;
-            businessModel: string;
-            industry: string;
-            conversationsRange: string;
-            visitorsRange: string;
-            platform: string;
-            agentCount: string;
-            goalId: string;
-            useAi: boolean;
-            createdAt: Date;
-        };
-    }>;
+    }): Promise<any>;
+    getMe(auth: AuthContext): Promise<any>;
 }
